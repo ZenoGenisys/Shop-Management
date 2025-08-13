@@ -1,0 +1,14 @@
+<div class="layout-container">
+  <app-header (menuClick)="toggleSidenav()"></app-header>
+  
+  <div class="content-wrapper">
+    <app-sidenav [opened]="sidenavOpened()" (backdropClick)="toggleSidenav()"></app-sidenav>
+    
+    <main class="main-content">
+      <div class="content-area">
+        <router-outlet></router-outlet>
+      </div>
+      <app-footer></app-footer>
+    </main>
+  </div>
+</div>

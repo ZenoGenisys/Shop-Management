@@ -1,0 +1,40 @@
+<mat-toolbar color="primary" class="header-toolbar">
+  <div class="header-left">
+    <button mat-icon-button (click)="onMenuClick()" class="menu-button">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <div class="logo">
+      <mat-icon class="logo-icon">store</mat-icon>
+      <span class="logo-text">Shop Management</span>
+    </div>
+  </div>
+
+  <div class="header-center">
+    <div class="search-container">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input type="text" placeholder="Search..." class="search-input">
+    </div>
+  </div>
+
+  <div class="header-right">
+    <button mat-icon-button [matBadge]="notifications" matBadgeColor="warn" class="notification-btn">
+      <mat-icon>notifications</mat-icon>
+    </button>
+
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item>
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item>
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>

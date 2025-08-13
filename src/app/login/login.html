@@ -1,1 +1,32 @@
-<p>login works!</p>
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <mat-icon class="logo-icon">store</mat-icon>
+      <h1>Shop Management</h1>
+      <p>Sign in to your account</p>
+    </div>
+
+    <form (ngSubmit)="onLogin()" class="login-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" [(ngModel)]="credentials.email" name="email" required>
+        <mat-icon matSuffix>email</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" [(ngModel)]="credentials.password" name="password" required>
+        <mat-icon matSuffix>lock</mat-icon>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" class="login-button">
+        <mat-icon>login</mat-icon>
+        Sign In
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>Demo: Use any email and password to login</p>
+    </div>
+  </div>
+</div>

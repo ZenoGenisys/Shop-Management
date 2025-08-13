@@ -1,1 +1,23 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+    <p>Welcome back! Here's what's happening with your store today.</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card" *ngFor="let stat of stats">
+      <div class="stat-content">
+        <div class="stat-icon" [style.background-color]="stat.color">
+          <mat-icon>{{ stat.icon }}</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ stat.title }}</h3>
+          <div class="stat-value">{{ stat.value }}</div>
+          <div class="stat-change" [style.color]="stat.color">{{ stat.change }}</div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+  
+</div>
