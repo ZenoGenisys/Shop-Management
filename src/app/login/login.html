@@ -1,32 +1,113 @@
 <div class="login-container">
-  <div class="login-card">
-    <div class="login-header">
-      <mat-icon class="logo-icon">store</mat-icon>
-      <h1>Shop Management</h1>
-      <p>Sign in to your account</p>
-    </div>
+  <!-- Background Progress -->
+  <div class="background-progress" [style.width.%]="progressValue"></div>
 
-    <form (ngSubmit)="onLogin()" class="login-form">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" [(ngModel)]="credentials.email" name="email" required>
-        <mat-icon matSuffix>email</mat-icon>
-      </mat-form-field>
+  <!-- Login Form -->
+  <div class="form-container" [@fadeInOut]>
+    <mat-card class="login-card">
+             <mat-card-header [class.slide-out]="showWelcome">
+         <mat-card-title class="card-title">
+           <mat-icon class="title-icon">admin_panel_settings</mat-icon>
+           Admin Login
+         </mat-card-title>
+       </mat-card-header>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Password</mat-label>
-        <input matInput type="password" [(ngModel)]="credentials.password" name="password" required>
-        <mat-icon matSuffix>lock</mat-icon>
-      </mat-form-field>
+      <mat-card-content>
+          <form [formGroup]="loginForm" (keyup)="onKeyPress($event)" (ngSubmit)="$event.preventDefault()" (keydown.enter)="$event.preventDefault(); canProceed() ? nextStep() : null">
+           <div class="form-steps-container" [class.welcome-active]="showWelcome">
+             
+             <!-- Username Step -->
+              <div class="form-step" [@slideInOut] [class.active]="currentStepForAnimation === 0">
+                <mat-form-field appearance="outline" class="full-width">
+                 <mat-label>Username</mat-label>
+                 <input matInput 
+                        formControlName="username" 
+                        placeholder="Enter your username"
+                        autocomplete="username"
+                        (blur)="onFieldTouch('username')">
+                 <mat-icon matSuffix>person</mat-icon>
+                 <mat-error *ngIf="shouldShowError('username') && usernameControl?.hasError('required')">
+                   Username is required
+                 </mat-error>
+                 <mat-error *ngIf="shouldShowError('username') && usernameControl?.hasError('minlength')">
+                   Username must be at least 3 characters
+                 </mat-error>
+               </mat-form-field>
+               
+                <div class="step-actions">
+                  <button type="button" mat-raised-button 
+                         color="primary" 
+                         [disabled]="!canProceed()"
+                         (click)="nextStep()"
+                         class="next-button">
+                   Next
+                   <mat-icon>arrow_forward</mat-icon>
+                 </button>
+               </div>
+             </div>
 
-      <button mat-raised-button color="primary" type="submit" class="login-button">
-        <mat-icon>login</mat-icon>
-        Sign In
-      </button>
-    </form>
+             <!-- Password Step -->
+              <div class="form-step" [@slideInOut] [class.active]="currentStepForAnimation === 1">
+                <mat-form-field appearance="outline" class="full-width">
+                 <mat-label>Password</mat-label>
+                 <input matInput 
+                        type="password" 
+                        formControlName="password" 
+                        placeholder="Create your password"
+                        autocomplete="current-password"
+                        (blur)="onFieldTouch('password')">
+                 <mat-icon matSuffix>lock</mat-icon>
+                 <mat-error *ngIf="shouldShowError('password') && passwordControl?.hasError('required')">
+                   Password is required
+                 </mat-error>
+                 <mat-error *ngIf="shouldShowError('password') && passwordControl?.hasError('minlength')">
+                   Password must be at least 6 characters
+                 </mat-error>
+               </mat-form-field>
+               
+                <div class="step-actions">
+                  <button type="button" mat-button 
+                         (click)="previousStep()"
+                         class="back-button">
+                   <mat-icon>arrow_back</mat-icon>
+                   Back
+                 </button>
+                 
+                  <button type="button" mat-raised-button 
+                         color="primary" 
+                         [disabled]="!canProceed() || isLoading"
+                         (click)="nextStep()"
+                         class="login-button">
+                   <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
+                   <span *ngIf="!isLoading">Login</span>
+                   <mat-icon *ngIf="!isLoading">login</mat-icon>
+                 </button>
+               </div>
+             </div>
 
-    <div class="login-footer">
-      <p>Demo: Use any email and password to login</p>
-    </div>
+             <!-- Welcome Step -->
+             <div class="form-step welcome-step" [@slideInOut] [class.active]="currentStepForAnimation === 2">
+               <div class="welcome-content">
+                 <mat-icon class="welcome-icon">check_circle</mat-icon>
+                 <h2>Welcome aboard!</h2>
+                 <p>Login successful. Redirecting to dashboard...</p>
+               </div>
+             </div>
+
+           </div>
+         </form>
+       </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Reset Button -->
+  <div *ngIf="!showWelcome && currentStep > 0" class="reset-container">
+    <button mat-button 
+            color="warn" 
+            (click)="resetForm()"
+            class="reset-button">
+      <mat-icon>refresh</mat-icon>
+      Start Over
+    </button>
   </div>
 </div>
