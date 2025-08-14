@@ -16,7 +16,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #f8f9fa;
+  background: var(--neutral-050);
   min-height: calc(100vh - 64px);
   overflow-x: hidden; // Prevent horizontal scrollbar
 

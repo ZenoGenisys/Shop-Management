@@ -4,14 +4,14 @@
 
     h1 {
       margin: 0 0 8px 0;
-      color: #343a40;
+      color: var(--neutral-900);
       font-size: 32px;
       font-weight: 700;
     }
 
     p {
       margin: 0;
-      color: #6c757d;
+      color: var(--neutral-700);
       font-size: 16px;
     }
   }
@@ -42,7 +42,7 @@
           justify-content: center;
 
           mat-icon {
-            color: white;
+            color: var(--brand-primary-contrast);
             font-size: 28px;
             width: 28px;
             height: 28px;
@@ -56,13 +56,13 @@
             margin: 0 0 4px 0;
             font-size: 14px;
             font-weight: 500;
-            color: #6c757d;
+            color: var(--neutral-700);
           }
 
           .stat-value {
             font-size: 24px;
             font-weight: 700;
-            color: #343a40;
+            color: var(--neutral-900);
             margin-bottom: 4px;
           }
 
@@ -84,7 +84,7 @@
       margin: 0 0 12px 0;
       font-size: 16px;
       font-weight: 600;
-      color: #343a40;
+      color: var(--neutral-900);
     }
 
     .chart-wrapper {
@@ -110,7 +110,7 @@
         margin: 0;
         font-size: 16px;
         font-weight: 600;
-        color: #343a40;
+        color: var(--neutral-900);
       }
     }
 
@@ -122,11 +122,11 @@
 
         th.mat-mdc-header-cell, td.mat-mdc-cell {
           padding: 12px 16px;
-          border-bottom: 1px solid #f1f3f5;
+          border-bottom: 1px solid var(--table-border);
         }
 
         th.mat-mdc-header-cell {
-          color: #6c757d;
+          color: var(--neutral-700);
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.02em;
@@ -134,11 +134,11 @@
         }
 
         td.mat-mdc-cell {
-          color: #343a40;
+          color: var(--neutral-900);
         }
 
         tr.mat-mdc-row:hover {
-          background: rgba(0,0,0,0.02);
+          background: var(--table-row-hover-bg);
         }
       }
     }
@@ -152,35 +152,35 @@
 
     // Chips styling to align with app theme
     .chip-income {
-      --mdc-chip-label-text-color: #1b5e20;
-      background: #c8e6c9;
+      --mdc-chip-label-text-color: var(--chip-income-text);
+      background: var(--chip-income-bg);
     }
     .chip-expense {
-      --mdc-chip-label-text-color: #7f2d00;
-      background: #ffe0b2;
+      --mdc-chip-label-text-color: var(--chip-expense-text);
+      background: var(--chip-expense-bg);
     }
     .chip-broiler {
-      --mdc-chip-label-text-color: #0d47a1;
-      background: #bbdefb;
+      --mdc-chip-label-text-color: var(--chip-broiler-text);
+      background: var(--chip-broiler-bg);
     }
     .chip-country {
-      --mdc-chip-label-text-color: #004d40;
-      background: #b2dfdb;
+      --mdc-chip-label-text-color: var(--chip-country-text);
+      background: var(--chip-country-bg);
     }
 
     .text-center { text-align: center; }
 
     .details-link {
-      color: #2196f3;
+      color: var(--brand-blue);
       text-decoration: none;
       cursor: pointer;
     }
     .details-link:hover { text-decoration: underline; }
 
     // Colorful action buttons
-    .icon-btn.view mat-icon { color: #2196f3; }
-    .icon-btn.edit mat-icon { color: #ff9800; }
-    .icon-btn.delete mat-icon { color: #f44336; }
+    .icon-btn.view mat-icon { color: var(--brand-blue); }
+    .icon-btn.edit mat-icon { color: var(--brand-orange); }
+    .icon-btn.delete mat-icon { color: var(--brand-red); }
   }
 }
 

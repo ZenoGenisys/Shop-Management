@@ -1,8 +1,8 @@
 .footer {
-  background: #343a40;
-  color: #adb5bd;
+  background: var(--neutral-900);
+  color: var(--neutral-400);
   padding: 16px 24px;
-  border-top: 1px solid #495057;
+  border-top: 1px solid var(--neutral-500);
   margin-top: auto;
 
   .footer-content {
@@ -17,7 +17,7 @@
 
     .footer-center {
       font-size: 12px;
-      color: #6c757d;
+      color: var(--neutral-700);
     }
 
     .footer-right {
@@ -28,13 +28,13 @@
         display: flex;
         align-items: center;
         gap: 4px;
-        color: #adb5bd;
+        color: var(--neutral-400);
         text-decoration: none;
         font-size: 12px;
         transition: color 0.3s ease;
 
         &:hover {
-          color: #667eea;
+          color: var(--brand-primary);
         }
 
         mat-icon {

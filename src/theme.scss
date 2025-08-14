@@ -1,0 +1,76 @@
+:root {
+  /* Brand and primary gradient */
+  --gradient-primary-start: #667eea;
+  --gradient-primary-end: #764ba2;
+  --brand-primary: #667eea;
+  --brand-primary-contrast: #ffffff;
+
+  /* Semantic brand colors */
+  --brand-blue: #2196f3;
+  --brand-orange: #ff9800;
+  --brand-green: #4caf50;
+  --brand-red: #f44336;
+
+  /* Additional greens for progress gradient */
+  --brand-green-2: #8bc34a;
+  --brand-green-3: #66bb6a;
+
+  /* Neutral palette */
+  --neutral-900: #343a40;
+  --neutral-800: #333333;
+  --neutral-700: #6c757d;
+  --neutral-600: #666666;
+  --neutral-500: #495057;
+  --neutral-400: #adb5bd;
+  --neutral-300: #dee2e6;
+  --neutral-200: #e9ecef;
+  --neutral-150: #f1f3f5;
+  --neutral-100: #f1f1f1;
+  --neutral-050: #f8f9fa;
+
+  /* UI elements */
+  --table-border: var(--neutral-150);
+  --table-row-hover-bg: rgba(0, 0, 0, 0.02);
+  --sidenav-badge-bg: #dc3545;
+  --chip-income-bg: #c8e6c9;
+  --chip-income-text: #1b5e20;
+  --chip-expense-bg: #ffe0b2;
+  --chip-expense-text: #7f2d00;
+  --chip-broiler-bg: #bbdefb;
+  --chip-broiler-text: #0d47a1;
+  --chip-country-bg: #b2dfdb;
+  --chip-country-text: #004d40;
+
+  /* Scrollbar */
+  --scrollbar-track: var(--neutral-100);
+  --scrollbar-thumb: #c1c1c1;
+  --scrollbar-thumb-hover: #a8a8a8;
+
+  /* RGB helpers for rgba() usage */
+  --black-rgb: 0, 0, 0;
+  --white-rgb: 255, 255, 255;
+  --primary-rgb: 102, 126, 234; /* #667eea */
+  --blue-500-rgb: 33, 150, 243; /* #2196f3 */
+  --orange-500-rgb: 255, 152, 0; /* #ff9800 */
+  --green-500-rgb: 76, 175, 80; /* #4caf50 */
+}
+
+/* Optional: dark scheme tokens scaffold (not enabled by default) */
+/*
+@media (prefers-color-scheme: dark) {
+  :root {
+    --neutral-050: #0f1115;
+    --neutral-100: #1a1d24;
+    --neutral-150: #20232b;
+    --neutral-200: #232733;
+    --neutral-300: #2c3140;
+    --neutral-400: #8b92a6;
+    --neutral-500: #9aa3b2;
+    --neutral-600: #aab2bf;
+    --neutral-700: #c0c6d4;
+    --neutral-800: #e1e5ee;
+    --neutral-900: #f1f3f8;
+  }
+}
+*/
+

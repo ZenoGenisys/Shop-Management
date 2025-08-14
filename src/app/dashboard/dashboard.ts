@@ -30,9 +30,9 @@ import { MatTableDataSource } from '@angular/material/table';
 })
 export class Dashboard implements AfterViewInit {
   stats = [
-    { title: 'Profit', value: '₹ 12,345', icon: 'attach_money', color: '#4caf50', change: '+12%' },
-    { title: 'Total Sales', value: '₹ 156', icon: 'shopping_cart', color: '#2196f3', change: '+8%' },
-    { title: 'Expense', value: '₹ 89', icon: 'people', color: '#ff9800', change: '+15%' },
+    { title: 'Profit', value: '₹ 12,345', icon: 'attach_money', color: 'var(--brand-green)', change: '+12%' },
+    { title: 'Total Sales', value: '₹ 156', icon: 'shopping_cart', color: 'var(--brand-blue)', change: '+8%' },
+    { title: 'Expense', value: '₹ 89', icon: 'people', color: 'var(--brand-orange)', change: '+15%' },
   ];
 
   barChartData: ChartConfiguration<'bar'>['data'] = {
@@ -90,6 +90,21 @@ export class Dashboard implements AfterViewInit {
 
   constructor() {
     Chart.register(...registerables);
+    // Resolve theme colors from CSS variables for Chart.js (canvas cannot resolve CSS vars itself)
+    const css = getComputedStyle(document.documentElement);
+    const blueRgb = css.getPropertyValue('--blue-500-rgb').trim() || '33, 150, 243';
+    const blue = css.getPropertyValue('--brand-blue').trim() || '#2196f3';
+    const orangeRgb = css.getPropertyValue('--orange-500-rgb').trim() || '255, 152, 0';
+    const orange = css.getPropertyValue('--brand-orange').trim() || '#ff9800';
+    const greenRgb = css.getPropertyValue('--green-500-rgb').trim() || '76, 175, 80';
+    const green = css.getPropertyValue('--brand-green').trim() || '#4caf50';
+
+    this.barChartData.datasets[0].backgroundColor = `rgba(${blueRgb}, 0.6)`;
+    this.barChartData.datasets[0].borderColor = blue as any;
+    this.barChartData.datasets[1].backgroundColor = `rgba(${orangeRgb}, 0.6)`;
+    this.barChartData.datasets[1].borderColor = orange as any;
+    this.barChartData.datasets[2].backgroundColor = `rgba(${greenRgb}, 0.6)`;
+    this.barChartData.datasets[2].borderColor = green as any;
   }
 
   // Recent Sales Table
