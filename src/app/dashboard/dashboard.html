@@ -31,4 +31,78 @@
     </div>
   </mat-card>
   
+  <!-- Recent Sales Table -->
+  <mat-card class="table-card">
+    <div class="table-header">
+      <h3>Recent Sales</h3>
+    </div>
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z1 recent-sales-table">
+
+        <!-- Date Column -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
+          <td mat-cell *matCellDef="let row"> {{ row.date | date:'mediumDate' }} </td>
+        </ng-container>
+
+        <!-- Type Column -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
+          <td mat-cell *matCellDef="let row" class="text-center">
+            <mat-chip-set>
+              <mat-chip [ngClass]="row.type === 'Income' ? 'chip-income' : 'chip-expense'" selected>{{ row.type }}</mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <!-- Category Column -->
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Category </th>
+          <td mat-cell *matCellDef="let row" class="text-center">
+            <mat-chip-set>
+              <mat-chip [ngClass]="row.category === 'Broiler' ? 'chip-broiler' : 'chip-country'" selected>{{ row.category }}</mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <!-- Quantity Column -->
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Quantity (kg) </th>
+          <td mat-cell *matCellDef="let row" class="text-center"> {{ row.quantityKg }} </td>
+        </ng-container>
+
+        <!-- Price Column -->
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Price </th>
+          <td mat-cell *matCellDef="let row" class="text-center"> {{ row.price | currency:'INR':'symbol':'1.2-2' }} </td>
+        </ng-container>
+
+        <!-- Details Column -->
+        <ng-container matColumnDef="details">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Details </th>
+          <td mat-cell *matCellDef="let row" class="text-center">{{ row.details }}</td>
+        </ng-container>
+
+        <!-- Action Column -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef> Action </th>
+          <td mat-cell *matCellDef="let row" class="actions-cell">
+            <button mat-icon-button class="icon-btn view" matTooltip="View" (click)="onView(row)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button class="icon-btn edit" matTooltip="Edit" (click)="onEdit(row)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button class="icon-btn delete" matTooltip="Delete" (click)="onDelete(row)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </mat-card>
+  
 </div>
