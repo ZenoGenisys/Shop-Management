@@ -39,10 +39,10 @@
                          color="primary" 
                          [disabled]="!canProceed()"
                          (click)="nextStep()"
-                         class="next-button">
-                   Next
-                   <mat-icon>arrow_forward</mat-icon>
-                 </button>
+                         class="next-button"
+                         [style.color]="'#fff'">Next
+                    <mat-icon>arrow_forward</mat-icon>
+                  </button>
                </div>
              </div>
 
@@ -77,7 +77,8 @@
                          color="primary" 
                          [disabled]="!canProceed() || isLoading"
                          (click)="nextStep()"
-                         class="login-button">
+                         class="login-button"
+                         [style.color]="'#fff'">
                    <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
                    <span *ngIf="!isLoading">Login</span>
                    <mat-icon *ngIf="!isLoading">login</mat-icon>
@@ -100,14 +101,4 @@
     </mat-card>
   </div>
 
-  <!-- Reset Button -->
-  <div *ngIf="!showWelcome && currentStep > 0" class="reset-container">
-    <button mat-button 
-            color="warn" 
-            (click)="resetForm()"
-            class="reset-button">
-      <mat-icon>refresh</mat-icon>
-      Start Over
-    </button>
-  </div>
 </div>

@@ -369,3 +369,13 @@ mat-card-header {
   cursor: not-allowed;
 }
 
+.next-button {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.login-button {
+  display: flex;
+  flex-direction: row-reverse;
+}
+

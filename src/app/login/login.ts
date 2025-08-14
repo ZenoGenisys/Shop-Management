@@ -155,7 +155,7 @@ export class Login implements OnInit {
       
       // Navigate to dashboard after showing welcome message
       setTimeout(() => {
-        // this.router.navigate(['/dashboard']);
+        this.router.navigate(['/dashboard']);
       }, 2000);
     }, 1500);
   }
