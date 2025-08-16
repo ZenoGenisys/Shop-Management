@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,9 +6,16 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { Chart, ChartConfiguration, ChartOptions, registerables } from 'chart.js';
+import { TransactionService, Transaction } from '../services/transaction.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { DeleteConfirmationDialog, DeleteConfirmationData } from '../shared/components';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,12 +29,15 @@ import { Chart, ChartConfiguration, ChartOptions, registerables } from 'chart.js
     MatTableModule,
     MatSortModule,
     MatTooltipModule,
+    MatProgressSpinnerModule,
+    MatDialogModule,
+    MatSnackBarModule,
     BaseChartDirective
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
-export class Dashboard implements AfterViewInit {
+export class Dashboard implements OnInit, AfterViewInit {
   stats = [
     { title: 'Profit', value: '₹ 12,345', icon: 'attach_money', color: 'var(--brand-green)', change: '+12%' },
     { title: 'Total Sales', value: '₹ 156', icon: 'shopping_cart', color: 'var(--brand-blue)', change: '+8%' },
@@ -91,7 +101,20 @@ export class Dashboard implements AfterViewInit {
     }
   };
 
-  constructor() {
+  // Recent Transactions Table
+  displayedColumns: string[] = ['date', 'type', 'category', 'quantity', 'price', 'details', 'action'];
+  recentTransactions: Transaction[] = [];
+  dataSource = new MatTableDataSource<Transaction>([]);
+  isLoading = false;
+  error: string | null = null;
+
+  @ViewChild(MatSort) sort!: MatSort;
+
+  constructor(
+    private transactionService: TransactionService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {
     Chart.register(...registerables);
     // Resolve theme colors from CSS variables for Chart.js (canvas cannot resolve CSS vars itself)
     const css = getComputedStyle(document.documentElement);
@@ -110,59 +133,170 @@ export class Dashboard implements AfterViewInit {
     this.barChartData.datasets[2].borderColor = green as any;
   }
 
-  // Recent Sales Table
-  displayedColumns: string[] = ['date', 'type', 'category', 'quantity', 'price', 'details', 'action'];
+  ngOnInit(): void {
+    this.loadRecentTransactions();
+  }
 
-  recentSales: Array<{
-    date: string; // ISO or display string
-    type: 'Income' | 'Expense';
-    category: 'Broiler' | 'Country Chicken';
-    quantityKg: number;
-    price: number;
-    details: string;
-  }> = [
-    { date: '2025-08-10', type: 'Income', category: 'Broiler', quantityKg: 12, price: 1800, details: 'Walk-in customer' },
-    { date: '2025-08-11', type: 'Expense', category: 'Country Chicken', quantityKg: 5, price: 600, details: 'Feed purchase' },
-    { date: '2025-08-12', type: 'Income', category: 'Country Chicken', quantityKg: 8, price: 1520, details: 'Online order #1024' },
-    { date: '2025-08-12', type: 'Expense', category: 'Broiler', quantityKg: 3, price: 350, details: 'Transport' },
-    { date: '2025-08-13', type: 'Income', category: 'Broiler', quantityKg: 15, price: 2100, details: 'Retailer invoice #A19' }
-  ];
-
-  dataSource = new MatTableDataSource(this.recentSales);
-
-  @ViewChild(MatSort) sort!: MatSort;
+  loadRecentTransactions(): void {
+    this.isLoading = true;
+    this.error = null;
+    
+    this.transactionService.getRecentTransactions(5)
+      .pipe(
+        catchError(error => {
+          console.error('Error fetching recent transactions:', error);
+          this.error = 'Failed to load recent transactions. Please try again.';
+          return of({ data: [], page: 1, pageSize: 5, totalRecords: 0 });
+        }),
+        finalize(() => this.isLoading = false)
+      )
+      .subscribe(response => {
+        this.recentTransactions = response.data;
+        this.dataSource.data = this.recentTransactions;
+        
+        // Re-apply sorting after data is loaded
+        if (this.sort && this.dataSource.sort) {
+          this.dataSource.sort = this.sort;
+        }
+        
+        if (this.recentTransactions.length === 0) {
+          this.error = 'No recent transactions found.';
+        }
+      });
+  }
 
   ngAfterViewInit(): void {
+    // Wait for the view to be fully initialized
+    setTimeout(() => {
+      this.setupTableSorting();
+    }, 100);
+  }
+
+  setupTableSorting(): void {
+    if (!this.sort) {
+      return;
+    }
+    
+    // Set up custom sorting for the data source
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
         case 'date':
           return new Date(item.date).getTime();
         case 'quantity':
-          return item.quantityKg;
+          return item.quantity;
         case 'price':
-          return item.price;
+          // Ensure price is treated as a number for proper sorting
+          const price = parseFloat(item.price?.toString() || '0');
+          return isNaN(price) ? 0 : price;
         case 'type':
           return item.type;
         case 'category':
           return item.category;
-        case 'details':
-          return item.details;
         default:
           return '' as any;
       }
     };
+
+    // Set the sort to the data source
     this.dataSource.sort = this.sort;
+    
+    // Force a change detection cycle
+    this.dataSource.data = [...this.dataSource.data];
   }
 
-  onView(row: any): void {
-    console.log('View', row);
+  onView(row: Transaction): void {
+    // Navigate to transaction details page
+    console.log('View transaction:', row);
   }
 
-  onEdit(row: any): void {
-    console.log('Edit', row);
+  onEdit(row: Transaction): void {
+    // Navigate to edit transaction page
+    console.log('Edit transaction:', row);
   }
 
-  onDelete(row: any): void {
-    console.log('Delete', row);
+  onDelete(row: Transaction): void {
+    if (!row.id) {
+      this.snackBar.open('Cannot delete transaction without ID', 'Close', { duration: 3000 });
+      return;
+    }
+
+    const dialogRef = this.dialog.open(DeleteConfirmationDialog, {
+      width: '500px',
+      data: {
+        title: 'Delete Transaction',
+        message: 'Are you sure you want to delete this transaction?',
+        details: [
+          { label: 'Date', value: new Date(row.date).toLocaleDateString() },
+          { label: 'Type', value: row.type },
+          { label: 'Category', value: row.category },
+          { label: 'Quantity', value: row.quantity.toString() },
+          { label: 'Price', value: `₹${row.price}` }
+        ],
+        warningText: 'This action cannot be undone.',
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteTransaction(row.id!);
+      }
+    });
+  }
+
+  deleteTransaction(id: number): void {
+    this.transactionService.deleteTransaction(id).subscribe({
+      next: () => {
+        this.snackBar.open('Transaction deleted successfully', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+        
+        // Remove from local array and update data source
+        this.recentTransactions = this.recentTransactions.filter(t => t.id !== id);
+        this.dataSource.data = this.recentTransactions;
+        
+        // Reload data if we have less than 5 transactions
+        if (this.recentTransactions.length < 5) {
+          this.loadRecentTransactions();
+        }
+      },
+      error: (error) => {
+        console.error('Error deleting transaction:', error);
+        this.snackBar.open('Failed to delete transaction', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+      }
+    });
+  }
+
+  // Helper methods for display
+  getTransactionTypeDisplay(type: string): string {
+    return type === 'INCOME' ? 'Income' : 'Expense';
+  }
+
+  getCategoryDisplay(category: string): string {
+    return category === 'BROILER' ? 'Broiler' : 'Country Chicken';
+  }
+
+  getSaleTypeDisplay(sale: string): string {
+    return sale === 'STANDARD' ? 'Standard' : 'Skin Out';
+  }
+
+  getGenderDisplay(gender: string): string {
+    return gender === 'MALE' ? 'Male' : 'Female';
+  }
+
+  getPaymentMethodDisplay(method: string): string {
+    switch (method) {
+      case 'CASH': return 'Cash';
+      case 'ONLINE': return 'Online';
+      case 'PENDING': return 'Pending';
+      default: return method;
+    }
   }
 }
