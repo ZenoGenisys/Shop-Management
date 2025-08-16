@@ -1,5 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl,
+  FormGroupDirective,
+  NgForm,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -8,10 +16,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { AuthService, LoginRequest } from '../auth.service';
 
 @Component({
   selector: 'app-login',
@@ -24,34 +32,39 @@ import { animate, style, transition, trigger } from '@angular/animations';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
   animations: [
     trigger('slideInOut', [
       transition('* => *', [
-        animate('400ms cubic-bezier(0.25, 0.46, 0.45, 0.94)')
-      ])
+        animate('400ms cubic-bezier(0.25, 0.46, 0.45, 0.94)'),
+      ]),
     ]),
     trigger('fadeInOut', [
       transition(':enter', [
         style({ opacity: 0, transform: 'scale(0.8)' }),
-        animate('300ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
+        animate('300ms ease-out', style({ opacity: 1, transform: 'scale(1)' })),
       ]),
       transition(':leave', [
-        animate('300ms ease-in', style({ opacity: 0, transform: 'scale(0.8)' }))
-      ])
+        animate(
+          '300ms ease-in',
+          style({ opacity: 0, transform: 'scale(0.8)' })
+        ),
+      ]),
     ]),
     trigger('welcomeAnimation', [
       transition(':enter', [
         style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate('500ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
-      ])
-    ])
-  ]
+        animate(
+          '500ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' })
+        ),
+      ]),
+    ]),
+  ],
 })
-
 export class Login implements OnInit {
   loginForm: FormGroup;
   currentStep = 0;
@@ -63,25 +76,42 @@ export class Login implements OnInit {
   passwordErrorMatcher: ErrorStateMatcher;
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private snackBar: MatSnackBar
+    readonly fb: FormBuilder,
+    readonly router: Router,
+    readonly snackBar: MatSnackBar,
+    private authService: AuthService
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
     });
 
     this.usernameErrorMatcher = {
-      isErrorState: (control: FormControl | null, _form: FormGroupDirective | NgForm | null): boolean => {
-        return !!(control && control.invalid && this.touchedFields['username'] && control.touched);
-      }
+      isErrorState: (
+        control: FormControl | null,
+        _form: FormGroupDirective | NgForm | null
+      ): boolean => {
+        return !!(
+          control &&
+          control.invalid &&
+          this.touchedFields['username'] &&
+          control.touched
+        );
+      },
     };
 
     this.passwordErrorMatcher = {
-      isErrorState: (control: FormControl | null, _form: FormGroupDirective | NgForm | null): boolean => {
-        return !!(control && control.invalid && this.touchedFields['password'] && control.touched);
-      }
+      isErrorState: (
+        control: FormControl | null,
+        _form: FormGroupDirective | NgForm | null
+      ): boolean => {
+        return !!(
+          control &&
+          control.invalid &&
+          this.touchedFields['password'] &&
+          control.touched
+        );
+      },
     };
   }
 
@@ -142,22 +172,42 @@ export class Login implements OnInit {
 
   shouldShowError(fieldName: string): boolean {
     const control = this.loginForm.get(fieldName);
-    return this.touchedFields[fieldName] && control?.invalid && control?.touched || false;
+    return (
+      (this.touchedFields[fieldName] && control?.invalid && control?.touched) ||
+      false
+    );
   }
 
   private completeLogin(): void {
-    this.isLoading = true;
-    
-    // Simulate API call
-    setTimeout(() => {
-      this.isLoading = false;
-      this.showWelcome = true;
-      
-      // Navigate to dashboard after showing welcome message
-      setTimeout(() => {
-        this.router.navigate(['/dashboard']);
-      }, 2000);
-    }, 1500);
+    if (this.loginForm.valid) {
+      this.isLoading = true;
+
+      const credentials: LoginRequest = {
+        username: this.loginForm.get('username')?.value,
+        password: this.loginForm.get('password')?.value,
+      };
+
+      this.authService.login(credentials).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          this.showWelcome = true;
+
+          // Navigate to dashboard after showing welcome message
+          setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+          }, 2000);
+        },
+
+        error: (error) => {
+          this.isLoading = false;
+          this.snackBar.open(
+            error.error?.error || 'Login failed. Please try again.',
+            'Close',
+            { duration: 5000 }
+          );
+        },
+      });
+    }
   }
 
   onKeyPress(event: KeyboardEvent): void {

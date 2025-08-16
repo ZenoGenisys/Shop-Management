@@ -6,6 +6,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../auth.service';
 
 @Component({
   selector: 'app-header',
@@ -17,17 +18,27 @@ import { CommonModule } from '@angular/common';
     MatIconModule,
     MatMenuModule,
     MatBadgeModule,
-    MatDividerModule
+    MatDividerModule,
   ],
   templateUrl: './header.html',
-  styleUrl: './header.scss'
+  styleUrl: './header.scss',
 })
 export class Header {
   @Output() menuClick = new EventEmitter<void>();
+  
+  constructor(readonly authService: AuthService) {}
+
+  get currentUser$() {
+    return this.authService.currentUser$;
+  }
   
   notifications = 3;
 
   onMenuClick() {
     this.menuClick.emit();
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }
