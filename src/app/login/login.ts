@@ -19,7 +19,7 @@ import { ErrorStateMatcher } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { AuthService, LoginRequest } from '../auth.service';
+import { AuthService, LoginRequest } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',

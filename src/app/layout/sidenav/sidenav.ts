@@ -5,7 +5,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService, User } from '../../auth.service';
+import { AuthService, User } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
 
 interface NavItem {
