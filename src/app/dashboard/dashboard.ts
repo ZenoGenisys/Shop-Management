@@ -78,6 +78,10 @@ export class Dashboard implements AfterViewInit {
         
       },
       y: {
+        grid: { 
+          display: true,
+          color: 'rgba(0, 0, 0, 0.05)'
+         },
         stacked: false,
         beginAtZero: true,
         ticks: {
