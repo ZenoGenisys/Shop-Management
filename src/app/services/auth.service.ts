@@ -11,6 +11,9 @@ export interface LoginRequest {
 export interface LoginResponse {
   msg: string;
   token: string;
+  user: {
+    username: string;
+  };
 }
 
 export interface User {
@@ -39,7 +42,7 @@ export class AuthService {
       .pipe(
         tap((response) => {
           this.storeUser({
-            username: credentials.username,
+            username: response.user.username,
             token: response.token,
           });
         })
