@@ -79,7 +79,7 @@ export class Login implements OnInit {
     readonly fb: FormBuilder,
     readonly router: Router,
     readonly snackBar: MatSnackBar,
-    private authService: AuthService
+    readonly authService: AuthService
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
