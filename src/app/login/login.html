@@ -17,10 +17,10 @@
            <div class="form-steps-container" [class.welcome-active]="showWelcome">
              
              <!-- Username Step -->
-              <div class="form-step" [@slideInOut] [class.active]="currentStepForAnimation === 0">
+              <div class="form-step" [@slideInOut] [class.active]="currentStepForAnimation === 0" [style.display]="currentStepForAnimation === 0 ? 'flex' : 'none'">
                 <mat-form-field appearance="outline" class="full-width">
                  <mat-label>Username</mat-label>
-                 <input matInput 
+                 <input matInput autocomplete
                         formControlName="username" 
                         placeholder="Enter your username"
                         autocomplete="username"
@@ -47,21 +47,18 @@
              </div>
 
              <!-- Password Step -->
-              <div class="form-step" [@slideInOut] [class.active]="currentStepForAnimation === 1">
+              <div class="form-step" [@slideInOut] [class.active]="currentStepForAnimation === 1" [style.display]="currentStepForAnimation === 1 ? 'flex' : 'none'">
                 <mat-form-field appearance="outline" class="full-width">
                  <mat-label>Password</mat-label>
                  <input matInput 
                         type="password" 
                         formControlName="password" 
-                        placeholder="Create your password"
+                        placeholder="Enter your password"
                         autocomplete="current-password"
                         (blur)="onFieldTouch('password')">
                  <mat-icon matSuffix>lock</mat-icon>
                  <mat-error *ngIf="shouldShowError('password') && passwordControl?.hasError('required')">
                    Password is required
-                 </mat-error>
-                 <mat-error *ngIf="shouldShowError('password') && passwordControl?.hasError('minlength')">
-                   Password must be at least 6 characters
                  </mat-error>
                </mat-form-field>
                
@@ -87,7 +84,7 @@
              </div>
 
              <!-- Welcome Step -->
-             <div class="form-step welcome-step" [@slideInOut] [class.active]="currentStepForAnimation === 2">
+             <div class="form-step welcome-step" [@slideInOut] [class.active]="currentStepForAnimation === 2" [style.display]="currentStepForAnimation === 2 ? 'flex' : 'none'">
                <div class="welcome-content">
                  <mat-icon class="welcome-icon">check_circle</mat-icon>
                  <h2>Welcome aboard!</h2>
