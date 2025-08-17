@@ -11,11 +11,24 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
-import { Chart, ChartConfiguration, ChartOptions, registerables } from 'chart.js';
-import { TransactionService, Transaction } from '../services/transaction.service';
+import {
+  Chart,
+  ChartConfiguration,
+  ChartOptions,
+  registerables,
+} from 'chart.js';
+import {
+  TransactionService,
+  Transaction,
+} from '../services/transaction.service';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { DeleteConfirmationDialog, DeleteConfirmationData } from '../shared/components';
+import {
+  DeleteConfirmationDialog,
+} from '../shared/components';
+import { DashboardService } from '../services/dashboard.service';
+import { ProfitLossTable } from '../type/dashboard.type';
+import { formatINR } from '../utils/currency';
 
 @Component({
   selector: 'app-dashboard',
@@ -32,18 +45,18 @@ import { DeleteConfirmationDialog, DeleteConfirmationData } from '../shared/comp
     MatProgressSpinnerModule,
     MatDialogModule,
     MatSnackBarModule,
-    BaseChartDirective
+    BaseChartDirective,
   ],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.scss'
+  styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit, AfterViewInit {
-  stats = [
-    { title: 'Profit', value: '₹ 12,345', icon: 'attach_money', color: 'var(--brand-green)', change: '+12%' },
-    { title: 'Total Sales', value: '₹ 156', icon: 'shopping_cart', color: 'var(--brand-blue)', change: '+8%' },
-    { title: 'Expense', value: '₹ 89', icon: 'people', color: 'var(--brand-orange)', change: '+15%' },
-  ];
-
+  // Format a number as INR currency string
+  // formatINR(value: number | string): string {
+  //   const num = typeof value === 'string' ? parseFloat(value) : value;
+  //   if (isNaN(num)) return '₹ 0 INR';
+  //   return `₹ ${num.toLocaleString('en-IN')} INR`;
+  // }
   barChartData: ChartConfiguration<'bar'>['data'] = {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     datasets: [
@@ -53,7 +66,7 @@ export class Dashboard implements OnInit, AfterViewInit {
         backgroundColor: 'rgba(33, 150, 243, 0.6)',
         borderColor: '#2196f3',
         borderWidth: 1,
-        borderRadius: 6
+        borderRadius: 6,
       },
       {
         data: [1200, 1600, 1500, 1700, 1800, 1900, 2100],
@@ -61,7 +74,7 @@ export class Dashboard implements OnInit, AfterViewInit {
         backgroundColor: 'rgba(255, 152, 0, 0.6)',
         borderColor: '#ff9800',
         borderWidth: 1,
-        borderRadius: 6
+        borderRadius: 6,
       },
       {
         data: [1000, 1200, 1000, 1300, 1700, 1300, 1900],
@@ -69,9 +82,9 @@ export class Dashboard implements OnInit, AfterViewInit {
         backgroundColor: 'rgba(76, 175, 80, 0.6)',
         borderColor: '#4caf50',
         borderWidth: 1,
-        borderRadius: 6
-      }
-    ]
+        borderRadius: 6,
+      },
+    ],
   };
 
   barChartOptions: ChartOptions<'bar'> = {
@@ -79,31 +92,39 @@ export class Dashboard implements OnInit, AfterViewInit {
     maintainAspectRatio: false,
     plugins: {
       legend: { position: 'top' },
-      tooltip: { enabled: true }
+      tooltip: { enabled: true },
     },
     scales: {
       x: {
         grid: { display: false },
-        stacked: false
-        
+        stacked: false,
       },
       y: {
-        grid: { 
+        grid: {
           display: true,
-          color: 'rgba(0, 0, 0, 0.05)'
-         },
+          color: 'rgba(0, 0, 0, 0.05)',
+        },
         stacked: false,
         beginAtZero: true,
         ticks: {
-          callback: (value) => `₹ ${value}`
-        }
-      }
-    }
+          callback: (value) => `₹ ${value}`,
+        },
+      },
+    },
   };
 
   // Recent Transactions Table
-  displayedColumns: string[] = ['date', 'type', 'category', 'quantity', 'price', 'details', 'action'];
+  displayedColumns: string[] = [
+    'date',
+    'type',
+    'category',
+    'quantity',
+    'price',
+    'details',
+    'action',
+  ];
   recentTransactions: Transaction[] = [];
+  profitLossData: ProfitLossTable[] = [];
   dataSource = new MatTableDataSource<Transaction>([]);
   isLoading = false;
   error: string | null = null;
@@ -111,18 +132,22 @@ export class Dashboard implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
-    private transactionService: TransactionService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private readonly transactionService: TransactionService,
+    private readonly dialog: MatDialog,
+    private readonly snackBar: MatSnackBar,
+    private readonly dashboardService: DashboardService
   ) {
     Chart.register(...registerables);
     // Resolve theme colors from CSS variables for Chart.js (canvas cannot resolve CSS vars itself)
     const css = getComputedStyle(document.documentElement);
-    const blueRgb = css.getPropertyValue('--blue-500-rgb').trim() || '33, 150, 243';
+    const blueRgb =
+      css.getPropertyValue('--blue-500-rgb').trim() || '33, 150, 243';
     const blue = css.getPropertyValue('--brand-blue').trim() || '#2196f3';
-    const orangeRgb = css.getPropertyValue('--orange-500-rgb').trim() || '255, 152, 0';
+    const orangeRgb =
+      css.getPropertyValue('--orange-500-rgb').trim() || '255, 152, 0';
     const orange = css.getPropertyValue('--brand-orange').trim() || '#ff9800';
-    const greenRgb = css.getPropertyValue('--green-500-rgb').trim() || '76, 175, 80';
+    const greenRgb =
+      css.getPropertyValue('--green-500-rgb').trim() || '76, 175, 80';
     const green = css.getPropertyValue('--brand-green').trim() || '#4caf50';
 
     this.barChartData.datasets[0].backgroundColor = `rgba(${blueRgb}, 0.6)`;
@@ -135,30 +160,72 @@ export class Dashboard implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadRecentTransactions();
+    this.loadProfitLossData();
+  }
+
+  loadProfitLossData(): void {
+    this.isLoading = true;
+    this.error = null;
+
+    this.dashboardService
+      .getProfitLoss()
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching profit/loss data:', error);
+          this.error = 'Failed to load profit/loss data. Please try again.';
+          return of({
+            data: { total_income: '0', total_expense: '0', profit: '0' },
+          });
+        }),
+        finalize(() => (this.isLoading = false))
+      )
+      .subscribe((response) => {
+        this.profitLossData = [
+          {
+            title: 'Profit',
+            value: formatINR(response?.data?.profit ?? '0'),
+            icon: 'attach_money',
+            color: 'var(--brand-green)'
+          },
+          {
+            title: 'Total Sales',
+            value: formatINR(response?.data?.total_income ?? '0'),
+            icon: 'shopping_cart',
+            color: 'var(--brand-blue)'
+          },
+          {
+            title: 'Expense',
+            value: formatINR(response?.data?.total_expense ?? '0'),
+            icon: 'people',
+            color: 'var(--brand-orange)'
+          },
+        ];
+      });
   }
 
   loadRecentTransactions(): void {
     this.isLoading = true;
     this.error = null;
-    
-    this.transactionService.getRecentTransactions(5)
+
+    this.transactionService
+      .getRecentTransactions(5)
       .pipe(
-        catchError(error => {
+        catchError((error) => {
           console.error('Error fetching recent transactions:', error);
           this.error = 'Failed to load recent transactions. Please try again.';
           return of({ data: [], page: 1, pageSize: 5, totalRecords: 0 });
         }),
-        finalize(() => this.isLoading = false)
+        finalize(() => (this.isLoading = false))
       )
-      .subscribe(response => {
+      .subscribe((response) => {
         this.recentTransactions = response.data;
         this.dataSource.data = this.recentTransactions;
-        
+
         // Re-apply sorting after data is loaded
         if (this.sort && this.dataSource.sort) {
           this.dataSource.sort = this.sort;
         }
-        
+
         if (this.recentTransactions.length === 0) {
           this.error = 'No recent transactions found.';
         }
@@ -176,7 +243,7 @@ export class Dashboard implements OnInit, AfterViewInit {
     if (!this.sort) {
       return;
     }
-    
+
     // Set up custom sorting for the data source
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
@@ -184,10 +251,11 @@ export class Dashboard implements OnInit, AfterViewInit {
           return new Date(item.date).getTime();
         case 'quantity':
           return item.quantity;
-        case 'price':
+        case 'price': {
           // Ensure price is treated as a number for proper sorting
           const price = parseFloat(item.price?.toString() || '0');
           return isNaN(price) ? 0 : price;
+        }
         case 'type':
           return item.type;
         case 'category':
@@ -199,7 +267,7 @@ export class Dashboard implements OnInit, AfterViewInit {
 
     // Set the sort to the data source
     this.dataSource.sort = this.sort;
-    
+
     // Force a change detection cycle
     this.dataSource.data = [...this.dataSource.data];
   }
@@ -216,7 +284,9 @@ export class Dashboard implements OnInit, AfterViewInit {
 
   onDelete(row: Transaction): void {
     if (!row.id) {
-      this.snackBar.open('Cannot delete transaction without ID', 'Close', { duration: 3000 });
+      this.snackBar.open('Cannot delete transaction without ID', 'Close', {
+        duration: 3000,
+      });
       return;
     }
 
@@ -230,15 +300,15 @@ export class Dashboard implements OnInit, AfterViewInit {
           { label: 'Type', value: row.type },
           { label: 'Category', value: row.category },
           { label: 'Quantity', value: row.quantity.toString() },
-          { label: 'Price', value: `₹${row.price}` }
+          { label: 'Price', value: `₹${row.price}` },
         ],
         warningText: 'This action cannot be undone.',
         confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel'
-      }
+        cancelButtonText: 'Cancel',
+      },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.deleteTransaction(row.id!);
       }
@@ -251,13 +321,15 @@ export class Dashboard implements OnInit, AfterViewInit {
         this.snackBar.open('Transaction deleted successfully', 'Close', {
           duration: 3000,
           horizontalPosition: 'center',
-          verticalPosition: 'bottom'
+          verticalPosition: 'bottom',
         });
-        
+
         // Remove from local array and update data source
-        this.recentTransactions = this.recentTransactions.filter(t => t.id !== id);
+        this.recentTransactions = this.recentTransactions.filter(
+          (t) => t.id !== id
+        );
         this.dataSource.data = this.recentTransactions;
-        
+
         // Reload data if we have less than 5 transactions
         if (this.recentTransactions.length < 5) {
           this.loadRecentTransactions();
@@ -268,9 +340,9 @@ export class Dashboard implements OnInit, AfterViewInit {
         this.snackBar.open('Failed to delete transaction', 'Close', {
           duration: 3000,
           horizontalPosition: 'center',
-          verticalPosition: 'bottom'
+          verticalPosition: 'bottom',
         });
-      }
+      },
     });
   }
 
@@ -293,10 +365,14 @@ export class Dashboard implements OnInit, AfterViewInit {
 
   getPaymentMethodDisplay(method: string): string {
     switch (method) {
-      case 'CASH': return 'Cash';
-      case 'ONLINE': return 'Online';
-      case 'PENDING': return 'Pending';
-      default: return method;
+      case 'CASH':
+        return 'Cash';
+      case 'ONLINE':
+        return 'Online';
+      case 'PENDING':
+        return 'Pending';
+      default:
+        return method;
     }
   }
 }

@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { API_URL } from '../config';
+import { API } from '../api-path';
 
 export interface LoginRequest {
   username: string;
@@ -25,7 +27,6 @@ export interface User {
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly API_URL = 'http://localhost:3000';
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
 
@@ -38,7 +39,7 @@ export class AuthService {
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http
-      .post<LoginResponse>(`${this.API_URL}/login`, credentials)
+      .post<LoginResponse>(`${API_URL}${API.LOGIN}`, credentials)
       .pipe(
         tap((response) => {
           this.storeUser({
