@@ -119,6 +119,7 @@ export class Dashboard implements OnInit, AfterViewInit {
     'type',
     'category',
     'quantity',
+    'payment_method',
     'price',
     'details',
     'action',
@@ -260,6 +261,8 @@ export class Dashboard implements OnInit, AfterViewInit {
           return item.type;
         case 'category':
           return item.category;
+        case 'payment_method':
+          return item.payment_method;
         default:
           return '' as any;
       }
@@ -300,6 +303,7 @@ export class Dashboard implements OnInit, AfterViewInit {
           { label: 'Type', value: row.type },
           { label: 'Category', value: row.category },
           { label: 'Quantity', value: row.quantity.toString() },
+          { label: 'Payment Method', value: this.getPaymentMethodDisplay(row.payment_method) },
           { label: 'Price', value: `₹${row.price}` },
         ],
         warningText: 'This action cannot be undone.',
@@ -373,6 +377,19 @@ export class Dashboard implements OnInit, AfterViewInit {
         return 'Pending';
       default:
         return method;
+    }
+  }
+
+  getPaymentMethodChipClass(method: string): string {
+    switch (method) {
+      case 'CASH':
+        return 'chip-cash';
+      case 'ONLINE':
+        return 'chip-online';
+      case 'PENDING':
+        return 'chip-pending';
+      default:
+        return '';
     }
   }
 }

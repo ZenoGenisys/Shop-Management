@@ -313,6 +313,18 @@
       --mdc-chip-label-text-color: var(--chip-country-text);
       background: var(--chip-country-bg);
     }
+    .chip-cash {
+      --mdc-chip-label-text-color: var(--chip-cash-text);
+      background: var(--chip-cash-bg);
+    }
+    .chip-online {
+      --mdc-chip-label-text-color: var(--chip-online-text);
+      background: var(--chip-online-bg);
+    }
+    .chip-pending {
+      --mdc-chip-label-text-color: var(--chip-pending-text);
+      background: var(--chip-pending-bg);
+    }
 
     .text-center { text-align: center; }
 
