@@ -63,6 +63,10 @@
   <mat-card class="table-card">
     <div class="table-header">
       <h3>All Transactions</h3>
+      <button mat-flat-button color="primary">
+        <mat-icon>add</mat-icon>
+        Add Data
+      </button>
     </div>
     <div class="table-container">
       <div *ngIf="isLoading" class="loading-container">
@@ -73,7 +77,8 @@
         <mat-icon>error</mat-icon>
         <p>{{ error }}</p>
       </div>
-  <table *ngIf="!isLoading && !error && dataSource.data.length > 0" mat-table [dataSource]="dataSource" matSort (matSortChange)="onSortChange($event)" class="mat-elevation-z1 recent-sales-table">
+      <table *ngIf="!isLoading && !error && dataSource.data.length > 0" mat-table [dataSource]="dataSource" matSort
+        (matSortChange)="onSortChange($event)" class="mat-elevation-z1 recent-sales-table">
         <!-- Date Column -->
         <ng-container matColumnDef="date">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
@@ -120,7 +125,8 @@
         <!-- Price Column -->
         <ng-container matColumnDef="price">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
-          <td mat-cell *matCellDef="let row" class="text-center">{{ (row.price || 0) | currency:'INR':'symbol':'1.2-2' }}</td>
+          <td mat-cell *matCellDef="let row" class="text-center">{{ (row.price || 0) | currency:'INR':'symbol':'1.2-2'
+            }}</td>
         </ng-container>
         <!-- Details Column -->
         <ng-container matColumnDef="details">
@@ -131,13 +137,16 @@
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let row" class="actions-cell">
-            <button mat-icon-button color="primary" class="icon-btn view" matTooltip="View Details" (click)="onView(row)">
+            <button mat-icon-button color="primary" class="icon-btn view" matTooltip="View Details"
+              (click)="onView(row)">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button mat-icon-button color="accent" class="icon-btn edit" matTooltip="Edit Transaction" (click)="onEdit(row)">
+            <button mat-icon-button color="accent" class="icon-btn edit" matTooltip="Edit Transaction"
+              (click)="onEdit(row)">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button color="warn" class="icon-btn delete" matTooltip="Delete Transaction" (click)="onDelete(row)">
+            <button mat-icon-button color="warn" class="icon-btn delete" matTooltip="Delete Transaction"
+              (click)="onDelete(row)">
               <mat-icon>delete</mat-icon>
             </button>
           </td>
@@ -145,7 +154,8 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
-      <mat-paginator [length]="totalRecords" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]" (page)="onPageChange($event)"></mat-paginator>
+      <mat-paginator [length]="totalRecords" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+        (page)="onPageChange($event)"></mat-paginator>
       <div *ngIf="!isLoading && !error && dataSource.data.length === 0" class="no-data-container">
         <mat-icon>info</mat-icon>
         <p>No transactions found.</p>

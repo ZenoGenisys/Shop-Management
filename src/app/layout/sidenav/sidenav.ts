@@ -53,6 +53,7 @@ export class Sidenav {
   navItems: NavItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
     { label: 'Reports', icon: 'analytics', route: '/reports' },
+    { label: 'Add Data', icon: 'add_circle', route: '/add-data' },
   ];
 
   bottomNavItems: NavItem[] = [
