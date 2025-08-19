@@ -111,7 +111,7 @@
             </mat-form-field>
 
             <div class="action-buttons">
-                <button mat-button type="button">Cancel</button>
+                <button mat-button type="button" (click)="onReset()">Reset</button>
                 <button mat-raised-button color="primary" type="submit" [disabled]="!transactionForm.valid">
                     Save Transaction
                 </button>

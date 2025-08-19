@@ -150,6 +150,10 @@ export class AddDataComponent implements OnInit {
       const formattedData = {
         ...formValue,
         date: formattedDate,
+        income_amount: parseFloat(formValue.income_amount) || 0,
+        purchase_amount: parseFloat(formValue.purchase_amount) || 0,
+        salary_amount: parseFloat(formValue.salary_amount) || 0,
+        others_amount: parseFloat(formValue.others_amount) || 0,
       };
 
       this.transactionService.createTransaction(formattedData)
@@ -161,7 +165,7 @@ export class AddDataComponent implements OnInit {
               horizontalPosition: 'center',
               verticalPosition: 'top'
             });
-            this.router.navigate(['/dashboard']);
+            this.onReset();
           },
           error: (error) => {
             this.snackBar.open(error.message || 'Failed to add transaction', 'Close', {
@@ -172,5 +176,9 @@ export class AddDataComponent implements OnInit {
           }
         });
     }
+  }
+
+  onReset() {
+    this.transactionForm.reset();
   }
 }
