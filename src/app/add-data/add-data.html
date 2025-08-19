@@ -97,13 +97,18 @@
                 <!-- Column 3 -->
                 <div class="form-col bulk-upload">
                     <h3>Bulk Upload</h3>
-                    <div class="upload-box">
+                    <div class="upload-box"
+                        [class.drag-over]="dragOver"
+                        (dragover)="onDragOver($event)"
+                        (dragleave)="onDragLeave($event)"
+                        (drop)="onDrop($event)">
                         <p>Drag & Drop Excel file here or</p>
                         <input #fileInput type="file" accept=".xlsx" style="display:none" (change)="onFileSelected($event)">
                         <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">Select File</button>
                         <div *ngIf="uploading" class="upload-status">Uploading...</div>
                         <div *ngIf="uploadSuccess" class="upload-status success">Upload successful!</div>
                         <div *ngIf="uploadError" class="upload-status error">{{uploadError}}</div>
+                        <div *ngIf="dragOver" class="drag-hint">Drop file to upload</div>
                     </div>
                     <div>
                         <button mat-stroked-button color="secondary" (click)="downloadSampleTemplate()">

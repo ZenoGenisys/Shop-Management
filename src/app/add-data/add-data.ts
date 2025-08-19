@@ -39,12 +39,40 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule
   ]
 })
+
 export class AddDataComponent implements OnInit {
   transactionForm!: FormGroup;
   isSubmitting = false;
   uploading = false;
   uploadSuccess = false;
   uploadError: string | null = null;
+  dragOver = false;
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver = false;
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver = false;
+    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      if (file && file.name.endsWith('.xlsx')) {
+        this.onFileSelected({ target: { files: [file] } } as any);
+      } else {
+        this.uploadError = 'Only .xlsx files are allowed.';
+        this.uploadSuccess = false;
+      }
+    }
+  }
 
   constructor(
     private readonly fb: FormBuilder,
@@ -71,6 +99,9 @@ export class AddDataComponent implements OnInit {
           horizontalPosition: 'center',
           verticalPosition: 'top'
         });
+        setTimeout(() => {
+          this.uploadSuccess = false;
+        }, 3000);
       },
       error: (err) => {
         this.uploading = false;
