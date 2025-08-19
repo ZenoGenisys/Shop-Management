@@ -99,9 +99,19 @@
                     <h3>Bulk Upload</h3>
                     <div class="upload-box">
                         <p>Drag & Drop Excel file here or</p>
-                        <button mat-stroked-button color="primary" type="button">Select File</button>
+                        <input #fileInput type="file" accept=".xlsx" style="display:none" (change)="onFileSelected($event)">
+                        <button mat-stroked-button color="primary" type="button" (click)="fileInput.click()">Select File</button>
+                        <div *ngIf="uploading" class="upload-status">Uploading...</div>
+                        <div *ngIf="uploadSuccess" class="upload-status success">Upload successful!</div>
+                        <div *ngIf="uploadError" class="upload-status error">{{uploadError}}</div>
                     </div>
-                    <small>You can upload multiple records at once using Excel (.xlsx)</small>
+                    <div>
+                        <button mat-stroked-button color="secondary" (click)="downloadSampleTemplate()">
+                            <mat-icon>download</mat-icon>
+                            Download Sample Template
+                        </button>
+                        <small>You can upload multiple records at once using Excel (.xlsx)</small>
+                    </div>
                 </div>
             </div>
 

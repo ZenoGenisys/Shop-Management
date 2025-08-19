@@ -13,7 +13,10 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { TransactionService } from '../services/transaction.service';
+import { ExportService } from '../services/export.service';
+import { ImportService } from '../services/import.service';
 import { finalize } from 'rxjs/operators';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-add-data',
@@ -32,19 +35,81 @@ import { finalize } from 'rxjs/operators';
     MatCardModule,
     MatGridListModule,
     MatRadioModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatIconModule
   ]
 })
 export class AddDataComponent implements OnInit {
   transactionForm!: FormGroup;
   isSubmitting = false;
-  
+  uploading = false;
+  uploadSuccess = false;
+  uploadError: string | null = null;
+
   constructor(
     private readonly fb: FormBuilder,
     private readonly transactionService: TransactionService,
+    private readonly exportService: ExportService,
+    private readonly importService: ImportService,
     private readonly snackBar: MatSnackBar,
     private readonly router: Router
   ) {}
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    const file = input.files[0];
+    this.uploading = true;
+    this.uploadSuccess = false;
+    this.uploadError = null;
+    this.importService.uploadFile(file).subscribe({
+      next: () => {
+        this.uploading = false;
+        this.uploadSuccess = true;
+        this.snackBar.open('File uploaded successfully', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      },
+      error: (err) => {
+        this.uploading = false;
+        this.uploadSuccess = false;
+        if (err.error?.details && Array.isArray(err.error.details)) {
+          // Show validation errors in a readable format
+          this.uploadError = 'Validation failed:\n' + err.error.details.map((d: any) => `Row ${d.row}: ${d.error}`).join('\n');
+        } else {
+          this.uploadError = err.error?.error || 'Failed to upload file';
+        }
+        this.snackBar.open(this.uploadError || 'Failed to upload file', 'Close', {
+          duration: 6000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      }
+    });
+  }
+  downloadSampleTemplate() {
+    this.exportService.downloadSample().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'transaction_sample.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.snackBar.open('Failed to download sample template', 'Close', {
+          duration: 4000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      }
+    });
+  }
 
   ngOnInit() {
     this.initForm();
@@ -61,9 +126,9 @@ export class AddDataComponent implements OnInit {
       payment_method: ['CASH', Validators.required],
       details: [''],
       income_amount: ['', Validators.required],
-      purchase_amount: [0, [Validators.min(0)]],
-      salary_amount: [0, [Validators.min(0)]],
-      others_amount: [0, [Validators.min(0)]],
+      purchase_amount: ['', [Validators.min(0)]],
+      salary_amount: [''],
+      others_amount: [''],
       price: [{ value: '', disabled: true }]
     });
 
@@ -108,7 +173,7 @@ export class AddDataComponent implements OnInit {
     ['purchase_amount', 'salary_amount', 'others_amount'].forEach(control => {
       const ctrl = this.transactionForm.get(control);
       if (ctrl) {
-        ctrl.setValue(0);
+        ctrl.setValue('');
         ctrl.clearValidators();
         ctrl.updateValueAndValidity();
       }
@@ -179,6 +244,7 @@ export class AddDataComponent implements OnInit {
   }
 
   onReset() {
-    this.transactionForm.reset();
+    // Completely rebuild the form to ensure clean state
+    this.initForm();
   }
 }
