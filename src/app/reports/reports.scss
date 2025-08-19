@@ -11,7 +11,208 @@
       font-size: 28px;
       font-weight: 600;
     }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        white-space: nowrap;
+        border-radius: 8px;
+        padding: 8px 16px;
+        transition: all 0.2s ease;
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
   }
+
+  .filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+    align-items: center;
+    .form-field {
+      flex: 1;
+      min-width: 200px;
+
+      mat-label {
+        color: var(--neutral-700);
+      }
+
+      mat-select, input {
+        width: 100%;
+      }
+    }
+    button[type='submit'] {
+      min-width: 100px;
+    }
+    button[type='button'] {
+      min-width: 80px;
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+  }
+
+  .table-card {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 24px;
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 16px;
+      h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--neutral-900);
+      }
+    }
+    .table-container {
+      overflow: auto;
+      .loading-container, .error-container, .no-data-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        gap: 16px;
+        p {
+          margin: 0;
+          color: var(--neutral-700);
+          font-size: 14px;
+        }
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+        }
+      }
+      table.recent-sales-table {
+        width: 100%;
+        th.mat-mdc-header-cell, td.mat-mdc-cell {
+          padding: 12px 16px;
+          border-bottom: 1px solid var(--table-border);
+        }
+        th.mat-mdc-header-cell {
+          color: var(--neutral-700);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
+          text-align: center;
+          transition: background-color 0.2s ease;
+          &:hover {
+            background: var(--neutral-100);
+          }
+          &.mat-sort-header {
+            cursor: pointer;
+            .mat-sort-header-container {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+            .mat-sort-header-arrow {
+              color: var(--brand-primary);
+            }
+            &.mat-sort-header-sorted .mat-sort-header-arrow {
+              color: var(--brand-primary);
+            }
+          }
+        }
+        td.mat-mdc-cell {
+          color: var(--neutral-900);
+        }
+        tr.mat-mdc-row:hover {
+          background: var(--table-row-hover-bg);
+        }
+      }
+
+      .actions-cell {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+      }
+      .text-center { text-align: center; }
+      .chip-income {
+        --mdc-chip-label-text-color: var(--chip-income-text);
+        background: var(--chip-income-bg);
+      }
+      .chip-expense {
+        --mdc-chip-label-text-color: var(--chip-expense-text);
+        background: var(--chip-expense-bg);
+      }
+      .chip-broiler {
+        --mdc-chip-label-text-color: var(--chip-broiler-text);
+        background: var(--chip-broiler-bg);
+      }
+      .chip-country {
+        --mdc-chip-label-text-color: var(--chip-country-text);
+        background: var(--chip-country-bg);
+      }
+      .chip-cash {
+        --mdc-chip-label-text-color: var(--chip-cash-text);
+        background: var(--chip-cash-bg);
+      }
+      .chip-online {
+        --mdc-chip-label-text-color: var(--chip-online-text);
+        background: var(--chip-online-bg);
+      }
+      .chip-pending {
+        --mdc-chip-label-text-color: var(--chip-pending-text);
+        background: var(--chip-pending-bg);
+      }
+
+      // Colorful action buttons
+    .icon-btn.view mat-icon { color: var(--brand-blue); }
+    .icon-btn.edit mat-icon { color: var(--brand-orange); }
+    .icon-btn.delete mat-icon { color: var(--brand-red); }
+
+    // Action button hover effects
+    .icon-btn {
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      border-radius: 50%;
+
+      &:hover {
+        transform: scale(1.1);
+        background-color: var(--neutral-100);
+      }
+
+      &.delete:hover {
+        background-color: rgba(244, 67, 54, 0.1);
+      }
+
+      &.edit:hover {
+        background-color: rgba(255, 152, 0, 0.1);
+      }
+
+      &.view:hover {
+        background-color: rgba(33, 150, 243, 0.1);
+      }
+    }
+    }
+  }
+}
+
+.mat-mdc-table, .mat-mdc-paginator {
+  background-color: var(--mat-table-background-color, var(--mat-sys-surface-low)) !important;
 }
 
 @media (max-width: 768px) {
@@ -20,6 +221,11 @@
       flex-direction: column;
       gap: 16px;
       align-items: flex-start;
+    }
+    .filter-form {
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
     }
   }
 }

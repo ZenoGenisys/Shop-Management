@@ -54,13 +54,32 @@ export class TransactionService {
     page: number = 1,
     pageSize: number = 10,
     sortBy: string = 'date',
-    sortOrder: string = 'desc'
+    sortOrder: string = 'desc',
+    filters?: any
   ): Observable<TransactionResponse> {
-    const params = new HttpParams()
+    let params = new HttpParams()
       .set('page', page.toString())
       .set('pageSize', pageSize.toString())
       .set('sortBy', sortBy)
       .set('sortOrder', sortOrder);
+
+    if (filters) {
+      if (filters.startDate) {
+        params = params.set('startDate', filters.startDate);
+      }
+      if (filters.endDate) {
+        params = params.set('endDate', filters.endDate);
+      }
+      if (filters.type) {
+        params = params.set('type', filters.type);
+      }
+      if (filters.category) {
+        params = params.set('category', filters.category);
+      }
+      if (filters.payment_method) {
+        params = params.set('payment_method', filters.payment_method);
+      }
+    }
 
     return this.http.get<TransactionResponse>(`${API_URL}/transaction`, { params })
       .pipe(catchError(this.handleError));
