@@ -33,6 +33,10 @@ export const routes: Routes = [
       {
         path: 'add-data',
         component: AddDataComponent
+      },
+      {
+        path: 'add-data/:id',
+        component: AddDataComponent
       }
     ]
   }

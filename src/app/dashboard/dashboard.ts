@@ -1,4 +1,5 @@
 import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -136,7 +137,8 @@ export class Dashboard implements OnInit, AfterViewInit {
     private readonly transactionService: TransactionService,
     private readonly dialog: MatDialog,
     private readonly snackBar: MatSnackBar,
-    private readonly dashboardService: DashboardService
+    private readonly dashboardService: DashboardService,
+    private readonly router: Router
   ) {
     Chart.register(...registerables);
     // Resolve theme colors from CSS variables for Chart.js (canvas cannot resolve CSS vars itself)
@@ -281,8 +283,11 @@ export class Dashboard implements OnInit, AfterViewInit {
   }
 
   onEdit(row: Transaction): void {
-    // Navigate to edit transaction page
-    console.log('Edit transaction:', row);
+    if (row.id) {
+      this.router.navigate(['/add-data', row.id]);
+    } else {
+      this.snackBar.open('Cannot edit transaction without ID', 'Close', { duration: 3000 });
+    }
   }
 
   onDelete(row: Transaction): void {

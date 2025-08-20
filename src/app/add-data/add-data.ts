@@ -11,7 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TransactionService } from '../services/transaction.service';
 import { ExportService } from '../services/export.service';
 import { ImportService } from '../services/import.service';
@@ -74,13 +74,17 @@ export class AddDataComponent implements OnInit {
     }
   }
 
+  editMode = false;
+  transactionId: number | null = null;
+
   constructor(
     private readonly fb: FormBuilder,
     private readonly transactionService: TransactionService,
     private readonly exportService: ExportService,
     private readonly importService: ImportService,
     private readonly snackBar: MatSnackBar,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {}
 
   onFileSelected(event: Event) {
@@ -143,7 +147,41 @@ export class AddDataComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.initForm();
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.editMode = true;
+        this.transactionId = +id;
+        this.initForm();
+        this.transactionService.getTransactionById(this.transactionId).subscribe({
+          next: (res) => {
+            this.patchForm(res.data);
+          },
+          error: (err) => {
+            this.snackBar.open('Failed to load transaction for edit', 'Close', {
+              duration: 4000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top'
+            });
+            this.router.navigate(['/dashboard']);
+          }
+        });
+      } else {
+        this.editMode = false;
+        this.transactionId = null;
+        this.initForm();
+      }
+    });
+  }
+
+  private patchForm(data: any) {
+    // Patch form values, convert date string to Date object
+    const patch = { ...data };
+    if (patch.date) {
+      patch.date = new Date(patch.date);
+    }
+    this.transactionForm.patchValue(patch);
+    this.updateTotalAmount();
   }
 
   private initForm() {
@@ -233,10 +271,7 @@ export class AddDataComponent implements OnInit {
   onSubmit() {
     if (this.transactionForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
-
-      // Get all values including disabled
       const formValue = { ...this.transactionForm.getRawValue() };
-      // Format the date as local YYYY-MM-DD (not UTC)
       let formattedDate = formValue.date;
       if (formattedDate instanceof Date) {
         const year = formattedDate.getFullYear();
@@ -244,7 +279,6 @@ export class AddDataComponent implements OnInit {
         const day = formattedDate.getDate().toString().padStart(2, '0');
         formattedDate = `${year}-${month}-${day}`;
       } else if (typeof formattedDate === 'string' && formattedDate.length > 10) {
-        // If string is ISO, slice to date part
         formattedDate = formattedDate.slice(0, 10);
       }
       const formattedData = {
@@ -257,26 +291,47 @@ export class AddDataComponent implements OnInit {
         others_amount: parseFloat(formValue.others_amount) || 0,
         details: typeof formValue.details === 'string' ? formValue.details : '',
       };
-
-      this.transactionService.createTransaction(formattedData)
-        .pipe(finalize(() => this.isSubmitting = false))
-        .subscribe({
-          next: (response) => {
-            this.snackBar.open('Transaction added successfully', 'Close', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
-            });
-            this.onReset();
-          },
-          error: (error) => {
-            this.snackBar.open(error.message || 'Failed to add transaction', 'Close', {
-              duration: 5000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
-            });
-          }
-        });
+      if (this.editMode && this.transactionId) {
+        this.transactionService.updateTransaction(this.transactionId, formattedData)
+          .pipe(finalize(() => this.isSubmitting = false))
+          .subscribe({
+            next: (response) => {
+              this.snackBar.open('Transaction updated successfully', 'Close', {
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top'
+              });
+              this.router.navigate(['/dashboard']);
+            },
+            error: (error) => {
+              this.snackBar.open(error.message || 'Failed to update transaction', 'Close', {
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top'
+              });
+            }
+          });
+      } else {
+        this.transactionService.createTransaction(formattedData)
+          .pipe(finalize(() => this.isSubmitting = false))
+          .subscribe({
+            next: (response) => {
+              this.snackBar.open('Transaction added successfully', 'Close', {
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top'
+              });
+              this.onReset();
+            },
+            error: (error) => {
+              this.snackBar.open(error.message || 'Failed to add transaction', 'Close', {
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'top'
+              });
+            }
+          });
+      }
     }
   }
 

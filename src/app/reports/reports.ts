@@ -245,8 +245,11 @@ export class Reports implements OnInit, AfterViewInit {
   }
 
   onEdit(row: Transaction): void {
-    // For now, just show edit info in an alert
-    alert('Edit Transaction (not implemented):\n' + JSON.stringify(row, null, 2));
+    if (row.id) {
+      this.router.navigate(['/add-data', row.id]);
+    } else {
+      this.snackBar.open('Cannot edit transaction without ID', 'Close', { duration: 3000 });
+    }
   }
 
   onDelete(row: Transaction): void {
