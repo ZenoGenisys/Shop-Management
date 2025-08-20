@@ -37,8 +37,4 @@ export class Header {
   onMenuClick(): void {
     this.menuClick.emit();
   }
-
-  logout(): void {
-    this.authService.logout();
-  }
 }

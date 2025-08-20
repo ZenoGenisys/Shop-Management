@@ -1,3 +1,4 @@
+
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,10 +30,10 @@ interface NavItem {
   templateUrl: './sidenav.html',
   styleUrl: './sidenav.scss'
 })
-export class Sidenav {
+
+export class Sidenav implements OnInit, OnDestroy {
   @Input() opened = true;
   @Output() backdropClick = new EventEmitter<void>();
-
   @Output() navItemClick = new EventEmitter<void>();
 
   currentUser: User | null = null;
@@ -40,7 +41,17 @@ export class Sidenav {
 
   currentYear = new Date().getFullYear();
 
-  constructor(readonly authService: AuthService) {}
+  navItems: NavItem[] = [
+    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
+    { label: 'Reports', icon: 'analytics', route: '/reports' },
+    { label: 'Add Data', icon: 'add_circle', route: '/add-data' },
+  ];
+
+  bottomNavItems: NavItem[] = [
+    { label: 'Logout', icon: 'logout', route: '' },
+  ];
+
+  constructor(readonly authService: AuthService) { }
 
   ngOnInit(): void {
     this.userSubscription = this.authService.currentUser$.subscribe(
@@ -54,15 +65,12 @@ export class Sidenav {
     }
   }
 
-  navItems: NavItem[] = [
-    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
-    { label: 'Reports', icon: 'analytics', route: '/reports' },
-    { label: 'Add Data', icon: 'add_circle', route: '/add-data' },
-  ];
-
-  bottomNavItems: NavItem[] = [
-    { label: 'Support', icon: 'support_agent', route: '/support' }
-  ];
+  logout(): void {
+    this.authService.logout();
+    if (this.isMobile()) {
+      this.backdropClick.emit();
+    }
+  }
 
   onBackdropClick(): void {
     this.backdropClick.emit();
@@ -72,9 +80,9 @@ export class Sidenav {
     return window.innerWidth <= 768;
   }
 
-    handleNavClick(): void {
-      if (this.isMobile()) {
-        this.backdropClick.emit();
-      }
+  handleNavClick(): void {
+    if (this.isMobile()) {
+      this.backdropClick.emit();
     }
+  }
 }

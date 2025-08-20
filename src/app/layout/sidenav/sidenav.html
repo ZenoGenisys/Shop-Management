@@ -32,10 +32,8 @@
       <mat-nav-list class="nav-list">
         <a mat-list-item 
            *ngFor="let item of bottomNavItems" 
-           [routerLink]="item.route"
-           routerLinkActive="active"
-           class="nav-item"
-           (click)="handleNavClick()">
+           [class.nav-item]="true"
+           (click)="item.label === 'Logout' ? logout() : handleNavClick()">
           <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
           <span matListItemTitle>{{ item.label }}</span>
         </a>
