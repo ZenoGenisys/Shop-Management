@@ -233,12 +233,16 @@ export class AddDataComponent implements OnInit {
   onSubmit() {
     if (this.transactionForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
+
       // Get all values including disabled
       const formValue = { ...this.transactionForm.getRawValue() };
-      // Format the date to 'YYYY-MM-DD' for MySQL
+      // Format the date as local YYYY-MM-DD (not UTC)
       let formattedDate = formValue.date;
       if (formattedDate instanceof Date) {
-        formattedDate = formattedDate.toISOString().slice(0, 10);
+        const year = formattedDate.getFullYear();
+        const month = (formattedDate.getMonth() + 1).toString().padStart(2, '0');
+        const day = formattedDate.getDate().toString().padStart(2, '0');
+        formattedDate = `${year}-${month}-${day}`;
       } else if (typeof formattedDate === 'string' && formattedDate.length > 10) {
         // If string is ISO, slice to date part
         formattedDate = formattedDate.slice(0, 10);
@@ -246,10 +250,12 @@ export class AddDataComponent implements OnInit {
       const formattedData = {
         ...formValue,
         date: formattedDate,
+        quantity: parseFloat(formValue.quantity) || 0,
         income_amount: parseFloat(formValue.income_amount) || 0,
         purchase_amount: parseFloat(formValue.purchase_amount) || 0,
         salary_amount: parseFloat(formValue.salary_amount) || 0,
         others_amount: parseFloat(formValue.others_amount) || 0,
+        details: typeof formValue.details === 'string' ? formValue.details : '',
       };
 
       this.transactionService.createTransaction(formattedData)

@@ -22,6 +22,7 @@ import { API_URL } from '../config';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { DeleteConfirmationDialog } from '../shared/components/delete-confirmation-dialog/delete-confirmation-dialog';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reports',
@@ -78,9 +79,10 @@ export class Reports implements OnInit, AfterViewInit {
 
   constructor(
     private readonly transactionService: TransactionService,
-    private readonly fb: FormBuilder,
     private readonly dialog: MatDialog,
-    private readonly snackBar: MatSnackBar
+    private readonly snackBar: MatSnackBar,
+    private readonly router: Router,
+    private readonly fb: FormBuilder
   ) {
     this.filterForm = this.fb.group({
       startDate: [null],
@@ -110,12 +112,18 @@ export class Reports implements OnInit, AfterViewInit {
   loadTransactions(page: number = 1, pageSize: number = 10, sortBy: string = this.sortBy, sortOrder: 'asc' | 'desc' = this.sortOrder): void {
     this.isLoading = true;
     this.error = null;
-    // Collect filter values, omit empty strings
+    // Collect filter values, omit empty strings, and convert dates to YYYY-MM-DD
     const rawFilters = this.filterForm.value;
     const filters: any = {};
     Object.keys(rawFilters).forEach(key => {
       if (rawFilters[key] !== '' && rawFilters[key] !== null) {
-        filters[key] = rawFilters[key];
+        if ((key === 'startDate' || key === 'endDate') && rawFilters[key] instanceof Date) {
+          // Convert to YYYY-MM-DD
+          const d = rawFilters[key] as Date;
+          filters[key] = d.toISOString().slice(0, 10);
+        } else {
+          filters[key] = rawFilters[key];
+        }
       }
     });
     this.transactionService.getAllTransactions(page, pageSize, sortBy, sortOrder, filters)
@@ -309,4 +317,9 @@ export class Reports implements OnInit, AfterViewInit {
       default: return '';
     }
   }
+
+  onAddData(): void {
+    this.router.navigate(['/add-data']);
+  }
+
 }
