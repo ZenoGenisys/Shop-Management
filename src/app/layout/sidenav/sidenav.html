@@ -19,7 +19,8 @@
          *ngFor="let item of navItems" 
          [routerLink]="item.route"
          routerLinkActive="active"
-         class="nav-item">
+         class="nav-item"
+         (click)="handleNavClick()">
         <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
         <span matListItemTitle>{{ item.label }}</span>
         <span matListItemMeta *ngIf="item.badge" class="badge">{{ item.badge }}</span>
@@ -33,7 +34,8 @@
            *ngFor="let item of bottomNavItems" 
            [routerLink]="item.route"
            routerLinkActive="active"
-           class="nav-item">
+           class="nav-item"
+           (click)="handleNavClick()">
           <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
           <span matListItemTitle>{{ item.label }}</span>
         </a>
@@ -44,9 +46,10 @@
 
 <!-- Backdrop overlay for mobile -->
 <div class="sidenav-backdrop" 
-     [class.visible]="opened" 
-     (click)="onBackdropClick()"
-     *ngIf="isMobile()"></div>
+  [class.visible]="opened" 
+  (click)="onBackdropClick()"
+  (keydown.enter)="onBackdropClick()"
+  *ngIf="isMobile()"></div>
 
 <div class="sidenav-content" [class.sidenav-opened]="opened">
   <ng-content></ng-content>

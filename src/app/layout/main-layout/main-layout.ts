@@ -3,7 +3,6 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Header } from '../header/header';
 import { Sidenav } from '../sidenav/sidenav';
-import { Footer } from '../footer/footer';
 
 @Component({
   selector: 'app-main-layout',
@@ -13,13 +12,12 @@ import { Footer } from '../footer/footer';
     RouterOutlet,
     Header,
     Sidenav,
-    Footer
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
 })
 export class MainLayout {
-  sidenavOpened = signal(true);
+  sidenavOpened = signal(window.innerWidth > 768);
 
   toggleSidenav() {
     this.sidenavOpened.update(opened => !opened);

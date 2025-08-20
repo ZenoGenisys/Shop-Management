@@ -227,5 +227,17 @@
       gap: 12px;
       align-items: stretch;
     }
+    .table-container {
+      overflow-x: auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      .mat-mdc-paginator {
+        min-width: 600px;
+        width: max-content;
+        align-self: flex-end;
+        margin: 12px 0 0 0;
+      }
+    }
   }
 }

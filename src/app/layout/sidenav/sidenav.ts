@@ -33,8 +33,12 @@ export class Sidenav {
   @Input() opened = true;
   @Output() backdropClick = new EventEmitter<void>();
 
+  @Output() navItemClick = new EventEmitter<void>();
+
   currentUser: User | null = null;
   private userSubscription: Subscription | null = null;
+
+  currentYear = new Date().getFullYear();
 
   constructor(readonly authService: AuthService) {}
 
@@ -67,4 +71,10 @@ export class Sidenav {
   isMobile(): boolean {
     return window.innerWidth <= 768;
   }
+
+    handleNavClick(): void {
+      if (this.isMobile()) {
+        this.backdropClick.emit();
+      }
+    }
 }
