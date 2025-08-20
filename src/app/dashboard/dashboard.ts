@@ -26,6 +26,7 @@ import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import {
   DeleteConfirmationDialog,
+  ViewTransactionDialog,
 } from '../shared/components';
 import { DashboardService } from '../services/dashboard.service';
 import { ProfitLossTable } from '../type/dashboard.type';
@@ -278,8 +279,22 @@ export class Dashboard implements OnInit, AfterViewInit {
   }
 
   onView(row: Transaction): void {
-    // Navigate to transaction details page
-    console.log('View transaction:', row);
+    if (!row.id) {
+      this.snackBar.open('Cannot view transaction without ID', 'Close', { duration: 3000 });
+      return;
+    }
+    this.transactionService.getTransactionById(row.id).subscribe({
+      next: (res) => {
+        this.dialog.open(ViewTransactionDialog, {
+          width: '95vw',
+          maxWidth: '500px',
+          data: res.data,
+        });
+      },
+      error: () => {
+        this.snackBar.open('Failed to load transaction details', 'Close', { duration: 3000 });
+      }
+    });
   }
 
   onEdit(row: Transaction): void {

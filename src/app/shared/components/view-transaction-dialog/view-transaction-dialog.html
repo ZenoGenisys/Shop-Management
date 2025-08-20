@@ -1,0 +1,18 @@
+<div class="view-transaction-dialog">
+  <div class="dialog-header">
+    <mat-icon>receipt_long</mat-icon>
+    <h2>Transaction Details</h2>
+    <button mat-icon-button (click)="close()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div class="dialog-content">
+    <div class="detail-row" *ngFor="let item of details">
+      <span class="label">{{ item.label }}</span>
+      <span class="value">{{ item.value }}</span>
+    </div>
+  </div>
+  <div class="dialog-actions">
+    <button mat-flat-button color="primary" (click)="close()">Close</button>
+  </div>
+</div>

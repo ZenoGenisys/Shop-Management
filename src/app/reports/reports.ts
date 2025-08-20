@@ -21,7 +21,7 @@ import { TransactionService, Transaction } from '../services/transaction.service
 import { API_URL } from '../config';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { DeleteConfirmationDialog } from '../shared/components/delete-confirmation-dialog/delete-confirmation-dialog';
+import { DeleteConfirmationDialog, ViewTransactionDialog } from '../shared/components';
 import { Router } from '@angular/router';
 
 @Component({
@@ -240,8 +240,22 @@ export class Reports implements OnInit, AfterViewInit {
   }
 
   onView(row: Transaction): void {
-    // For now, just show details in an alert
-    alert('Transaction Details:\n' + JSON.stringify(row, null, 2));
+    if (!row.id) {
+      this.snackBar.open('Cannot view transaction without ID', 'Close', { duration: 3000 });
+      return;
+    }
+    this.transactionService.getTransactionById(row.id).subscribe({
+      next: (res) => {
+        this.dialog.open(ViewTransactionDialog, {
+          width: '95vw',
+          maxWidth: '500px',
+          data: res.data,
+        });
+      },
+      error: () => {
+        this.snackBar.open('Failed to load transaction details', 'Close', { duration: 3000 });
+      }
+    });
   }
 
   onEdit(row: Transaction): void {
