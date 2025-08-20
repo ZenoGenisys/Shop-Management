@@ -1,3 +1,4 @@
+type StepAnimationState = 'left' | 'center' | 'right';
 import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -18,7 +19,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { animate, style, transition, trigger } from '@angular/animations';
+import { animate, style, transition, trigger, state } from '@angular/animations';
 import { AuthService, LoginRequest } from '../services/auth.service';
 
 @Component({
@@ -38,9 +39,33 @@ import { AuthService, LoginRequest } from '../services/auth.service';
   styleUrl: './login.scss',
   animations: [
     trigger('slideInOut', [
-      transition('* => *', [
-        animate('400ms cubic-bezier(0.25, 0.46, 0.45, 0.94)'),
+      state('left', style({
+        transform: 'translateX(-100%)',
+        opacity: 0,
+        position: 'absolute',
+        width: '100%'
+      })),
+      state('center', style({
+        transform: 'translateX(0)',
+        opacity: 1,
+        position: 'absolute',
+        width: '100%'
+      })),
+      state('right', style({
+        transform: 'translateX(100%)',
+        opacity: 0,
+        position: 'absolute',
+        width: '100%'
+      })),
+      transition('left <=> center', [
+        animate('400ms cubic-bezier(0.25, 0.46, 0.45, 0.94)')
       ]),
+      transition('center <=> right', [
+        animate('400ms cubic-bezier(0.25, 0.46, 0.45, 0.94)')
+      ]),
+      transition('left <=> right', [
+        animate('400ms cubic-bezier(0.25, 0.46, 0.45, 0.94)')
+      ])
     ]),
     trigger('fadeInOut', [
       transition(':enter', [
@@ -130,13 +155,37 @@ export class Login implements OnInit {
     }
   }
 
-  get currentStepForAnimation(): number {
+  get currentStepForAnimation(): StepAnimationState {
+    // Step 0: Username (center), Step 1: Password (center), Step 2: Welcome (center)
     if (this.showWelcome) {
-      return 2; // Welcome step
+      return 'right'; // Hide previous steps, show welcome
     }
-    return this.currentStep;
+    if (this.currentStep === 0) {
+      return 'center';
+    } else if (this.currentStep === 1) {
+      return 'left';
+    }
+    return 'center';
   }
 
+  get passwordStepAnimationState(): StepAnimationState {
+    if (this.showWelcome) {
+      return 'left'; // Slide out when welcome is active
+    }
+    if (this.currentStep === 1) {
+      return 'center';
+    } else if (this.currentStep === 0) {
+      return 'right';
+    }
+    return 'center';
+  }
+
+  get welcomeStepAnimationState(): StepAnimationState {
+    if (this.showWelcome) {
+      return 'center';
+    }
+    return 'right';
+  }
   get usernameControl() {
     return this.loginForm.get('username');
   }

@@ -15,9 +15,9 @@
       <mat-card-content>
           <form [formGroup]="loginForm" (keyup)="onKeyPress($event)" (ngSubmit)="$event.preventDefault()" (keydown.enter)="$event.preventDefault(); canProceed() ? nextStep() : null">
            <div class="form-steps-container" [class.welcome-active]="showWelcome">
-             
+
              <!-- Username Step -->
-              <div class="form-step" [@slideInOut] [class.active]="currentStepForAnimation === 0" [style.display]="currentStepForAnimation === 0 ? 'flex' : 'none'">
+              <div class="form-step" [@slideInOut]="currentStepForAnimation" [class.active]="currentStepForAnimation === 'center'" [style.display]="currentStepForAnimation === 'center' ? 'flex' : 'none'">
                 <mat-form-field appearance="outline" class="full-width">
                  <mat-label>Username</mat-label>
                  <input matInput autocomplete
@@ -47,7 +47,7 @@
              </div>
 
              <!-- Password Step -->
-              <div class="form-step" [@slideInOut] [class.active]="currentStepForAnimation === 1" [style.display]="currentStepForAnimation === 1 ? 'flex' : 'none'">
+              <div class="form-step" [@slideInOut]="passwordStepAnimationState" [class.active]="passwordStepAnimationState === 'center'" [style.display]="passwordStepAnimationState === 'center' ? 'flex' : 'none'">
                 <mat-form-field appearance="outline" class="full-width">
                  <mat-label>Password</mat-label>
                  <input matInput 
@@ -63,13 +63,7 @@
                </mat-form-field>
                
                 <div class="step-actions">
-                  <button type="button" mat-button 
-                         (click)="previousStep()"
-                         class="back-button">
-                   <mat-icon>arrow_back</mat-icon>
-                   Back
-                 </button>
-                 
+
                   <button type="button" mat-raised-button 
                          color="primary" 
                          [disabled]="!canProceed() || isLoading"
@@ -80,11 +74,18 @@
                    <span *ngIf="!isLoading">Login</span>
                    <mat-icon *ngIf="!isLoading">login</mat-icon>
                  </button>
+
+                 <button type="button" mat-button 
+                         (click)="previousStep()"
+                         class="back-button">
+                   <mat-icon>arrow_back</mat-icon>
+                   Back
+                 </button>
                </div>
              </div>
 
              <!-- Welcome Step -->
-             <div class="form-step welcome-step" [@slideInOut] [class.active]="currentStepForAnimation === 2" [style.display]="currentStepForAnimation === 2 ? 'flex' : 'none'">
+             <div class="form-step welcome-step" [@slideInOut]="welcomeStepAnimationState" [class.active]="welcomeStepAnimationState === 'center'" [style.display]="welcomeStepAnimationState === 'center' ? 'flex' : 'none'">
                <div class="welcome-content">
                  <mat-icon class="welcome-icon">check_circle</mat-icon>
                  <h2>Welcome aboard!</h2>
