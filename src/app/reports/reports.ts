@@ -23,6 +23,7 @@ import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { DeleteConfirmationDialog, ViewTransactionDialog } from '../shared/components';
 import { Router } from '@angular/router';
+import { ExportService } from '../services/export.service';
 
 @Component({
   selector: 'app-reports',
@@ -79,6 +80,7 @@ export class Reports implements OnInit, AfterViewInit {
 
   constructor(
     private readonly transactionService: TransactionService,
+    private readonly exportService: ExportService,
     private readonly dialog: MatDialog,
     private readonly snackBar: MatSnackBar,
     private readonly router: Router,
@@ -119,8 +121,7 @@ export class Reports implements OnInit, AfterViewInit {
       if (rawFilters[key] !== '' && rawFilters[key] !== null) {
         if ((key === 'startDate' || key === 'endDate') && rawFilters[key] instanceof Date) {
           // Convert to YYYY-MM-DD
-          const d = rawFilters[key] as Date;
-          filters[key] = d.toISOString().slice(0, 10);
+          filters[key] = rawFilters[key].toISOString().slice(0, 10);
         } else {
           filters[key] = rawFilters[key];
         }
@@ -189,44 +190,41 @@ export class Reports implements OnInit, AfterViewInit {
       if (file) {
         const formData = new FormData();
         formData.append('file', file);
-        // Call backend API for import
-        fetch('/api/export', {
+        fetch(`${API_URL}/export`, {
           method: 'POST',
           body: formData,
           credentials: 'include',
         })
           .then(async (res) => {
             if (!res.ok) {
-              const err = await res.json();
+              let err;
+              try { err = await res.json(); } catch { err = {}; }
               throw new Error(err.error || 'Import failed');
             }
-            alert('Import successful!');
+            this.snackBar.open('Import successful!', 'Close', { duration: 3000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] });
             this.loadTransactions();
           })
-          .catch((err) => alert('Import failed: ' + err.message));
+          .catch((err) => this.snackBar.open('Import failed: ' + err.message, 'Close', { duration: 4000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] }));
       }
     };
     input.click();
   }
 
   onExportClick(): void {
-    // Call backend API for export and trigger file download
-    fetch(`${API_URL}/export`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      }
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          let err;
-          try { err = await res.json(); } catch { err = {}; }
-          throw new Error(err.error || 'Export failed');
+    // Collect current filters
+    const rawFilters = this.filterForm.value;
+    const filters: any = {};
+    Object.keys(rawFilters).forEach(key => {
+      if (rawFilters[key] !== '' && rawFilters[key] !== null) {
+        if ((key === 'startDate' || key === 'endDate') && rawFilters[key] instanceof Date) {
+          filters[key] = rawFilters[key].toISOString().slice(0, 10);
+        } else {
+          filters[key] = rawFilters[key];
         }
-        return res.blob();
-      })
-      .then((blob) => {
+      }
+    });
+    this.exportService.exportTransactions(filters).subscribe({
+      next: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -235,8 +233,12 @@ export class Reports implements OnInit, AfterViewInit {
         a.click();
         a.remove();
         window.URL.revokeObjectURL(url);
-      })
-      .catch((err) => alert('Export failed: ' + err.message));
+        this.snackBar.open('Export successful', 'Close', { duration: 3000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] });
+      },
+      error: (err) => {
+        this.snackBar.open('Export failed: ' + (err?.message || err), 'Close', { duration: 4000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] });
+      }
+    });
   }
 
   onView(row: Transaction): void {
