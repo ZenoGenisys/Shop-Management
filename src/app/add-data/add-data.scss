@@ -88,6 +88,14 @@
 }
 
 /* Responsive */
+// Hide/show total amount field for mobile/desktop
+.total-amount-mobile {
+  display: none;
+}
+.total-amount-desktop {
+  display: block;
+}
+
 @media (max-width: 1024px) {
   .add-data-container {
     .form-grid {
@@ -101,5 +109,21 @@
     .form-grid {
       grid-template-columns: 1fr;
     }
+  }
+
+  .total-amount-mobile {
+    display: block;
+    margin-top: 20px;
+  }
+  .total-amount-desktop {
+    display: none !important;
+  }
+
+  .full-width.details-field {
+    margin-top: 0px;
+  }
+
+  .sample-template {
+    margin-top: 20px;
   }
 }

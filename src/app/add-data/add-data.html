@@ -41,7 +41,7 @@
                         <input matInput type="number" formControlName="salary_amount" placeholder="0">
                     </mat-form-field>
 
-                    <mat-form-field appearance="outline" class="full-width">
+                    <mat-form-field appearance="outline" class="full-width total-amount-desktop">
                         <mat-label>Total Amount</mat-label>
                         <input matInput type="number" formControlName="price" placeholder="0" [disabled]="true">
                         <span matPrefix>&#8377;&nbsp;</span>
@@ -119,6 +119,14 @@
                     </div>
                 </div>
             </div>
+
+
+            <!-- Total Amount for mobile view -->
+            <mat-form-field appearance="outline" class="full-width total-amount-mobile">
+                <mat-label>Total Amount</mat-label>
+                <input matInput type="number" formControlName="price" placeholder="0" [disabled]="true">
+                <span matPrefix>&#8377;&nbsp;</span>
+            </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width details-field">
                 <mat-label>Details</mat-label>
