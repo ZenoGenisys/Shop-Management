@@ -57,7 +57,6 @@ export class Sidenav {
   ];
 
   bottomNavItems: NavItem[] = [
-    { label: 'Help', icon: 'help', route: '/help' },
     { label: 'Support', icon: 'support_agent', route: '/support' }
   ];
 
