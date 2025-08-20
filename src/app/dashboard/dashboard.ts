@@ -286,7 +286,7 @@ export class Dashboard implements OnInit, AfterViewInit {
 
   onView(row: Transaction): void {
     if (!row.id) {
-      this.snackBar.open('Cannot view transaction without ID', 'Close', { duration: 3000 });
+  this.snackBar.open('Cannot view transaction without ID', 'Close', { duration: 3000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] });
       return;
     }
     this.transactionService.getTransactionById(row.id).subscribe({
@@ -298,7 +298,7 @@ export class Dashboard implements OnInit, AfterViewInit {
         });
       },
       error: () => {
-        this.snackBar.open('Failed to load transaction details', 'Close', { duration: 3000 });
+  this.snackBar.open('Failed to load transaction details', 'Close', { duration: 3000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] });
       }
     });
   }
@@ -307,7 +307,7 @@ export class Dashboard implements OnInit, AfterViewInit {
     if (row.id) {
       this.router.navigate(['/add-data', row.id]);
     } else {
-      this.snackBar.open('Cannot edit transaction without ID', 'Close', { duration: 3000 });
+  this.snackBar.open('Cannot edit transaction without ID', 'Close', { duration: 3000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] });
     }
   }
 
@@ -315,6 +315,9 @@ export class Dashboard implements OnInit, AfterViewInit {
     if (!row.id) {
       this.snackBar.open('Cannot delete transaction without ID', 'Close', {
         duration: 3000,
+        horizontalPosition: 'right',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-top-right'],
       });
       return;
     }
@@ -350,8 +353,9 @@ export class Dashboard implements OnInit, AfterViewInit {
       next: () => {
         this.snackBar.open('Transaction deleted successfully', 'Close', {
           duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-top-right'],
         });
 
         // Remove from local array and update data source
@@ -369,8 +373,9 @@ export class Dashboard implements OnInit, AfterViewInit {
         console.error('Error deleting transaction:', error);
         this.snackBar.open('Failed to delete transaction', 'Close', {
           duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-top-right'],
         });
       },
     });

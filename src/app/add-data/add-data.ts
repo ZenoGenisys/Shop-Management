@@ -100,8 +100,9 @@ export class AddDataComponent implements OnInit {
         this.uploadSuccess = true;
         this.snackBar.open('File uploaded successfully', 'Close', {
           duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-top-right']
         });
         setTimeout(() => {
           this.uploadSuccess = false;
@@ -118,8 +119,9 @@ export class AddDataComponent implements OnInit {
         }
         this.snackBar.open(this.uploadError || 'Failed to upload file', 'Close', {
           duration: 6000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-top-right']
         });
       }
     });
@@ -139,8 +141,9 @@ export class AddDataComponent implements OnInit {
       error: () => {
         this.snackBar.open('Failed to download sample template', 'Close', {
           duration: 4000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-top-right']
         });
       }
     });
@@ -160,8 +163,9 @@ export class AddDataComponent implements OnInit {
           error: (err) => {
             this.snackBar.open('Failed to load transaction for edit', 'Close', {
               duration: 4000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top'
+              horizontalPosition: 'right',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-top-right']
             });
             this.router.navigate(['/dashboard']);
           }
@@ -298,16 +302,18 @@ export class AddDataComponent implements OnInit {
             next: (response) => {
               this.snackBar.open('Transaction updated successfully', 'Close', {
                 duration: 3000,
-                horizontalPosition: 'center',
-                verticalPosition: 'top'
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+                panelClass: ['snackbar-top-right']
               });
               this.router.navigate(['/dashboard']);
             },
             error: (error) => {
               this.snackBar.open(error.message || 'Failed to update transaction', 'Close', {
                 duration: 5000,
-                horizontalPosition: 'center',
-                verticalPosition: 'top'
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+                panelClass: ['snackbar-top-right']
               });
             }
           });
@@ -318,16 +324,18 @@ export class AddDataComponent implements OnInit {
             next: (response) => {
               this.snackBar.open('Transaction added successfully', 'Close', {
                 duration: 3000,
-                horizontalPosition: 'center',
-                verticalPosition: 'top'
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+                panelClass: ['snackbar-top-right']
               });
               this.onReset();
             },
             error: (error) => {
               this.snackBar.open(error.message || 'Failed to add transaction', 'Close', {
                 duration: 5000,
-                horizontalPosition: 'center',
-                verticalPosition: 'top'
+                horizontalPosition: 'right',
+                verticalPosition: 'top',
+                panelClass: ['snackbar-top-right']
               });
             }
           });

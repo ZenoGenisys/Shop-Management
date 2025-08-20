@@ -241,7 +241,7 @@ export class Reports implements OnInit, AfterViewInit {
 
   onView(row: Transaction): void {
     if (!row.id) {
-      this.snackBar.open('Cannot view transaction without ID', 'Close', { duration: 3000 });
+  this.snackBar.open('Cannot view transaction without ID', 'Close', { duration: 3000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] });
       return;
     }
     this.transactionService.getTransactionById(row.id).subscribe({
@@ -253,7 +253,7 @@ export class Reports implements OnInit, AfterViewInit {
         });
       },
       error: () => {
-        this.snackBar.open('Failed to load transaction details', 'Close', { duration: 3000 });
+  this.snackBar.open('Failed to load transaction details', 'Close', { duration: 3000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] });
       }
     });
   }
@@ -262,13 +262,13 @@ export class Reports implements OnInit, AfterViewInit {
     if (row.id) {
       this.router.navigate(['/add-data', row.id]);
     } else {
-      this.snackBar.open('Cannot edit transaction without ID', 'Close', { duration: 3000 });
+  this.snackBar.open('Cannot edit transaction without ID', 'Close', { duration: 3000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] });
     }
   }
 
   onDelete(row: Transaction): void {
     if (!row.id) {
-      this.snackBar.open('Cannot delete transaction without ID', 'Close', { duration: 3000 });
+  this.snackBar.open('Cannot delete transaction without ID', 'Close', { duration: 3000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] });
       return;
     }
     const dialogRef = this.dialog.open(DeleteConfirmationDialog, {
@@ -301,10 +301,10 @@ export class Reports implements OnInit, AfterViewInit {
               const err = await res.json();
               throw new Error(err.error || 'Delete failed');
             }
-            this.snackBar.open('Transaction deleted successfully', 'Close', { duration: 3000 });
+            this.snackBar.open('Transaction deleted successfully', 'Close', { duration: 3000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] });
             this.loadTransactions();
           })
-          .catch((err) => this.snackBar.open('Delete failed: ' + err.message, 'Close', { duration: 3000 }));
+          .catch((err) => this.snackBar.open('Delete failed: ' + err.message, 'Close', { duration: 3000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] }));
       }
     });
   }

@@ -25,16 +25,16 @@ import { AuthService } from '../../services/auth.service';
 })
 export class Header {
   @Output() menuClick = new EventEmitter<void>();
-  
-  constructor(readonly authService: AuthService) {}
+
+  constructor(
+    public readonly authService: AuthService
+  ) {}
 
   get currentUser$() {
     return this.authService.currentUser$;
   }
-  
-  notifications = 3;
 
-  onMenuClick() {
+  onMenuClick(): void {
     this.menuClick.emit();
   }
 

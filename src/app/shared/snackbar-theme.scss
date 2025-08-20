@@ -1,0 +1,36 @@
+/* Snackbar custom styles for top-right, theme-aware, and modern look */
+.mat-mdc-simple-snack-bar {
+  top: 24px !important;
+  right: 24px !important;
+  left: auto !important;
+  bottom: auto !important;
+  position: fixed !important;
+  z-index: 2000 !important;
+  min-width: 280px;
+  max-width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(var(--black-rgb), 0.12);
+  background: var(--brand-primary, #667eea) !important;
+  color: var(--brand-primary-contrast, #fff) !important;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 15px !important;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: snackbar-fade-in 0.3s;
+}
+
+.mat-mdc-simple-snack-bar .mat-simple-snackbar-action {
+  color: var(--brand-orange, #ff9800) !important;
+  font-weight: 600;
+}
+
+.mat-mdc-snack-bar-label.mdc-snackbar__label {
+    padding: 0px !important;
+}
+
+@keyframes snackbar-fade-in {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}

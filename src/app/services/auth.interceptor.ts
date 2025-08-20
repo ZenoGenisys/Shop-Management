@@ -29,8 +29,9 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
           hasShownSessionExpired = true;
           snackBar.open('Your session has expired. Please log in again.', 'Close', {
             duration: 4000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom',
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-top-right'],
           });
           authService.logout();
           setTimeout(() => {

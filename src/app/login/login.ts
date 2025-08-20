@@ -203,7 +203,7 @@ export class Login implements OnInit {
           this.snackBar.open(
             error.error?.error || 'Login failed. Please try again.',
             'Close',
-            { duration: 5000 }
+            { duration: 5000, horizontalPosition: 'right', verticalPosition: 'top', panelClass: ['snackbar-top-right'] }
           );
         },
       });
