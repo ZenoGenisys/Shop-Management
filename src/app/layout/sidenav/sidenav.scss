@@ -81,6 +81,7 @@
   .nav-list {
     padding: 8px 0;
     flex: 1;
+    background: var(--neutral-050);
 
     .nav-item {
       margin: 4px 8px;
@@ -133,6 +134,7 @@
   .sidenav-footer {
     flex-shrink: 0;
     border-top: 1px solid var(--neutral-300);
+    background: var(--neutral-050);
 
     .nav-list {
       .nav-item {
