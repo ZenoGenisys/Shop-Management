@@ -97,10 +97,11 @@ export class Dashboard implements OnInit, AfterViewInit {
       this.openSnackBar('Start date cannot be after end date.');
       return;
     }
+    const formatDate = (date: Date) => date.toISOString().slice(0, 10);
     this.loadChartData({
       type: 'custom',
-      startDate: this.customStartDate,
-      endDate: this.customEndDate
+      startDate: formatDate(this.customStartDate),
+      endDate: formatDate(this.customEndDate)
     });
   }
 
@@ -133,12 +134,7 @@ export class Dashboard implements OnInit, AfterViewInit {
         this.barChartData = response;
       });
   }
-  // Format a number as INR currency string
-  // formatINR(value: number | string): string {
-  //   const num = typeof value === 'string' ? parseFloat(value) : value;
-  //   if (isNaN(num)) return '₹ 0 INR';
-  //   return `₹ ${num.toLocaleString('en-IN')} INR`;
-  // }
+  
   barChartData: ChartConfiguration<'bar'>['data'] = {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     datasets: [
