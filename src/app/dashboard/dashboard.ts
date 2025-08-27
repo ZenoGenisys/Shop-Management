@@ -65,6 +65,7 @@ import { formatINR } from '../utils/currency';
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit, AfterViewInit {
+  private snackBarRef: any = null;
   // Reset chart to weekly view
   resetChartRange(): void {
     this.selectedRange = 'weekly';
@@ -77,12 +78,42 @@ export class Dashboard implements OnInit, AfterViewInit {
 
   // Called when the user changes the chart range or applies a custom range
   onRangeChange(): void {
-    let params: any = { type: this.selectedRange };
-    if (this.selectedRange === 'custom' && this.customStartDate && this.customEndDate) {
-      params.startDate = this.customStartDate;
-      params.endDate = this.customEndDate;
+    // If switching to custom, clear previous dates
+    if (this.selectedRange === 'custom') {
+      this.customStartDate = null;
+      this.customEndDate = null;
+    } else {
+      // For non-custom, immediately load data
+      this.loadChartData({ type: this.selectedRange });
     }
-    this.loadChartData(params);
+  }
+
+  onApplyCustomRange(): void {
+    if (!this.customStartDate || !this.customEndDate) {
+      this.openSnackBar('Please select both start and end dates.');
+      return;
+    }
+    if (this.customStartDate > this.customEndDate) {
+      this.openSnackBar('Start date cannot be after end date.');
+      return;
+    }
+    this.loadChartData({
+      type: 'custom',
+      startDate: this.customStartDate,
+      endDate: this.customEndDate
+    });
+  }
+
+  openSnackBar(message: string): void {
+    if (this.snackBarRef) {
+      this.snackBarRef.dismiss();
+    }
+    this.snackBarRef = this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: 'snackbar-error',
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+    });  
   }
 
   // Fetch chart data from backend based on selected range
