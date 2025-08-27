@@ -11,6 +11,12 @@ import { ProfitLossResponse } from '../type/dashboard.type';
 })
 export class DashboardService {
 
+  // New method to get chart data by range
+  getChartData(params: any): Observable<any> {
+    return this.http.get<any>(`${API_URL}/dashboard/chart-data`, { params })
+      .pipe(catchError(this.handleError));
+  }
+
   constructor(private readonly http: HttpClient) { }
 
   getProfitLoss(): Observable<ProfitLossResponse> {

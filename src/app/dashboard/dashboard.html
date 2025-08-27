@@ -18,9 +18,35 @@
       </div>
     </mat-card>
   </div>
-  <!-- Weekly Chart -->
+  <!-- Chart with Range Selector -->
   <mat-card class="chart-card">
-    <h3 class="chart-title">Weekly Sales, Expense & Profit</h3>
+    <div class="chart-header" style="display: flex; align-items: center; justify-content: space-between;">
+      <h3 class="chart-title">Sales, Expense & Profit</h3>
+  <button mat-icon-button matTooltip="Reset to Weekly" (click)="resetChartRange()" class="reset-btn themed-btn" style="margin-left:auto;">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+    <div class="chart-range-controls">
+      <mat-button-toggle-group [(ngModel)]="selectedRange" (change)="onRangeChange()" name="rangeType"
+        aria-label="Chart Range">
+        <mat-button-toggle value="weekly">Weekly</mat-button-toggle>
+        <mat-button-toggle value="monthly">Monthly</mat-button-toggle>
+        <mat-button-toggle value="yearly">Yearly</mat-button-toggle>
+        <mat-button-toggle value="custom">Custom</mat-button-toggle>
+      </mat-button-toggle-group>
+      <ng-container *ngIf="selectedRange === 'custom'">
+        <mat-form-field appearance="outline" class="date-range-field">
+          <mat-label>Date Range</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate placeholder="Start date" [(ngModel)]="customStartDate">
+            <input matEndDate placeholder="End date" [(ngModel)]="customEndDate">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+          <button mat-raised-button color="primary" class="apply-btn themed-btn" (click)="onApplyCustomRange()">Apply</button>
+      </ng-container>
+    </div>
     <div class="chart-wrapper">
       <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="'bar'">
       </canvas>

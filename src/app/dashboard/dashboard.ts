@@ -10,6 +10,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import {
@@ -47,53 +53,104 @@ import { formatINR } from '../utils/currency';
     MatProgressSpinnerModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatButtonToggleModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatInputModule,
+    MatNativeDateModule,
+    FormsModule,
     BaseChartDirective,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit, AfterViewInit {
-  // Format a number as INR currency string
-  // formatINR(value: number | string): string {
-  //   const num = typeof value === 'string' ? parseFloat(value) : value;
-  //   if (isNaN(num)) return '₹ 0 INR';
-  //   return `₹ ${num.toLocaleString('en-IN')} INR`;
-  // }
-  barChartData: ChartConfiguration<'bar'>['data'] = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    datasets: [
-      {
-        data: [2200, 2800, 2500, 3000, 3500, 3200, 4000],
-        label: 'Sales',
-        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--blue-500-rgb')
-          ? `rgba(${getComputedStyle(document.documentElement).getPropertyValue('--blue-500-rgb')}, 0.6)`
-          : 'rgba(33, 150, 243, 0.6)',
-        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--brand-blue') || '#2196f3',
-        borderWidth: 1,
-        borderRadius: 6,
-      },
-      {
-        data: [1200, 1600, 1500, 1700, 1800, 1900, 2100],
-        label: 'Expense',
-        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--orange-500-rgb')
-          ? `rgba(${getComputedStyle(document.documentElement).getPropertyValue('--orange-500-rgb')}, 0.6)`
-          : 'rgba(255, 152, 0, 0.6)',
-        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--brand-orange') || '#ff9800',
-        borderWidth: 1,
-        borderRadius: 6,
-      },
-      {
-        data: [1000, 1200, 1000, 1300, 1700, 1300, 1900],
-        label: 'Profit',
-        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--green-500-rgb')
-          ? `rgba(${getComputedStyle(document.documentElement).getPropertyValue('--green-500-rgb')}, 0.6)`
-          : 'rgba(76, 175, 80, 0.6)',
-        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--brand-green') || '#4caf50',
-        borderWidth: 1,
-        borderRadius: 6,
-      },
-    ],
-  };
+  private snackBarRef: any = null;
+  // Reset chart to weekly view
+  resetChartRange(): void {
+    this.selectedRange = 'weekly';
+    this.onRangeChange();
+  }
+  // Chart range selection properties
+  selectedRange: 'weekly' | 'monthly' | 'yearly' | 'custom' = 'weekly';
+  customStartDate: Date | null = null;
+  customEndDate: Date | null = null;
+
+  // Called when the user changes the chart range or applies a custom range
+  onRangeChange(): void {
+    // If switching to custom, clear previous dates
+    if (this.selectedRange === 'custom') {
+      this.customStartDate = null;
+      this.customEndDate = null;
+    } else {
+      // For non-custom, immediately load data
+      this.loadChartData({ type: this.selectedRange });
+    }
+  }
+
+  onApplyCustomRange(): void {
+    if (!this.customStartDate || !this.customEndDate) {
+      this.openSnackBar('Please select both start and end dates.');
+      return;
+    }
+    if (this.customStartDate > this.customEndDate) {
+      this.openSnackBar('Start date cannot be after end date.');
+      return;
+    }
+    const formatDate = (date: Date) => date.toISOString().slice(0, 10);
+    this.loadChartData({
+      type: 'custom',
+      startDate: formatDate(this.customStartDate),
+      endDate: formatDate(this.customEndDate)
+    });
+  }
+
+  openSnackBar(message: string): void {
+    if (this.snackBarRef) {
+      this.snackBarRef.dismiss();
+    }
+    this.snackBarRef = this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: 'snackbar-error',
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+    });  
+  }
+
+  // Fetch chart data from backend based on selected range
+  loadChartData(params: any): void {
+    this.isLoading = true;
+    this.error = null;
+    this.dashboardService.getChartData(params)
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching chart data:', error);
+          this.error = 'Failed to load chart data. Please try again.';
+          return of({ labels: [], datasets: [] });
+        }),
+        finalize(() => (this.isLoading = false))
+      )
+      .subscribe((response) => {
+        let labels = response.labels;
+        if (params.type === 'custom' && Array.isArray(labels)) {
+          labels = labels.map((label: string) => label.split('T')[0] || label);
+        } else if (params.type === 'weekly' && Array.isArray(labels)) {
+          // Map week numbers (1-7 or 0-6) to Mon-Sun
+          const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+          labels = labels.map((num: any) => weekDays[(parseInt(num) - 1 + 7) % 7] || num);
+        } else if (params.type === 'monthly' && Array.isArray(labels)) {
+          // Map month numbers (1-12) to Jan-Dec
+          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          labels = labels.map((num: any) => months[(parseInt(num) - 1 + 12) % 12] || num);
+        }
+        this.barChartData = {
+          ...response,
+          labels
+        };
+      });
+  }
+  
+  barChartData: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
 
   barChartOptions: ChartOptions<'bar'> = {
     responsive: true,
@@ -147,30 +204,14 @@ export class Dashboard implements OnInit, AfterViewInit {
     private readonly dashboardService: DashboardService,
     private readonly router: Router
   ) {
-    Chart.register(...registerables);
-    // Resolve theme colors from CSS variables for Chart.js (canvas cannot resolve CSS vars itself)
-    const css = getComputedStyle(document.documentElement);
-    const blueRgb =
-      css.getPropertyValue('--blue-500-rgb').trim() || '33, 150, 243';
-    const blue = css.getPropertyValue('--brand-blue').trim() || '#2196f3';
-    const orangeRgb =
-      css.getPropertyValue('--orange-500-rgb').trim() || '255, 152, 0';
-    const orange = css.getPropertyValue('--brand-orange').trim() || '#ff9800';
-    const greenRgb =
-      css.getPropertyValue('--green-500-rgb').trim() || '76, 175, 80';
-    const green = css.getPropertyValue('--brand-green').trim() || '#4caf50';
-
-    this.barChartData.datasets[0].backgroundColor = `rgba(${blueRgb}, 0.6)`;
-    this.barChartData.datasets[0].borderColor = blue as any;
-    this.barChartData.datasets[1].backgroundColor = `rgba(${orangeRgb}, 0.6)`;
-    this.barChartData.datasets[1].borderColor = orange as any;
-    this.barChartData.datasets[2].backgroundColor = `rgba(${greenRgb}, 0.6)`;
-    this.barChartData.datasets[2].borderColor = green as any;
+  Chart.register(...registerables);
   }
 
   ngOnInit(): void {
-    this.loadRecentTransactions();
-    this.loadProfitLossData();
+  this.loadRecentTransactions();
+  this.loadProfitLossData();
+  // Load weekly chart data by default on initial page load
+  this.loadChartData({ type: 'weekly' });
   }
 
   loadProfitLossData(): void {
