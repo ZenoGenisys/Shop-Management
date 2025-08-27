@@ -1,3 +1,25 @@
+// Themed button styles for Apply and Reset
+.themed-btn {
+  font-weight: 500;
+  border-radius: 4px;
+  box-shadow: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.apply-btn.themed-btn {
+  background: var(--brand-blue, #2196f3);
+  color: #fff;
+}
+.apply-btn.themed-btn:hover {
+  background: var(--brand-blue-dark, #1976d2);
+}
+
+.reset-btn.themed-btn {
+  color: var(--brand-blue, #2196f3);
+}
+.reset-btn.themed-btn:hover {
+  background: rgba(33, 150, 243, 0.08);
+}
     // Overlay for table loading
     .table-loading-overlay {
       position: absolute;
@@ -406,6 +428,14 @@
 
 .mat-mdc-table {
   background-color: var(--mat-table-background-color, var(--mat-sys-surface-low)) !important;
+}
+
+.date-range-field {
+  margin-left: 15px;
+}
+
+.apply-btn {
+  margin-left: 15px;
 }
 
 @media (max-width: 768px) {

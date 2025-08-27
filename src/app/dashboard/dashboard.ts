@@ -10,6 +10,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import {
@@ -47,12 +53,55 @@ import { formatINR } from '../utils/currency';
     MatProgressSpinnerModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatButtonToggleModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatInputModule,
+    MatNativeDateModule,
+    FormsModule,
     BaseChartDirective,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit, AfterViewInit {
+  // Reset chart to weekly view
+  resetChartRange(): void {
+    this.selectedRange = 'weekly';
+    this.onRangeChange();
+  }
+  // Chart range selection properties
+  selectedRange: 'weekly' | 'monthly' | 'yearly' | 'custom' = 'weekly';
+  customStartDate: Date | null = null;
+  customEndDate: Date | null = null;
+
+  // Called when the user changes the chart range or applies a custom range
+  onRangeChange(): void {
+    let params: any = { type: this.selectedRange };
+    if (this.selectedRange === 'custom' && this.customStartDate && this.customEndDate) {
+      params.startDate = this.customStartDate;
+      params.endDate = this.customEndDate;
+    }
+    this.loadChartData(params);
+  }
+
+  // Fetch chart data from backend based on selected range
+  loadChartData(params: any): void {
+    this.isLoading = true;
+    this.error = null;
+    this.dashboardService.getChartData(params)
+      .pipe(
+        catchError((error) => {
+          console.error('Error fetching chart data:', error);
+          this.error = 'Failed to load chart data. Please try again.';
+          return of({ labels: [], datasets: [] });
+        }),
+        finalize(() => (this.isLoading = false))
+      )
+      .subscribe((response) => {
+        this.barChartData = response;
+      });
+  }
   // Format a number as INR currency string
   // formatINR(value: number | string): string {
   //   const num = typeof value === 'string' ? parseFloat(value) : value;
