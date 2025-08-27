@@ -78,9 +78,12 @@
       </button>
     </div>
     <div class="table-container">
-      <div *ngIf="isLoading" class="loading-container">
-        <mat-spinner diameter="40"></mat-spinner>
-        <p>Loading transactions...</p>
+      <div *ngIf="isLoading" class="table-loading-overlay">
+        <div class="table-loading-backdrop"></div>
+        <div class="table-loading-content">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading transactions...</p>
+        </div>
       </div>
       <div *ngIf="!isLoading && error" class="error-container">
         <mat-icon>error</mat-icon>
